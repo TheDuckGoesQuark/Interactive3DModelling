@@ -1,0 +1,163 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% University Assignment Title Page 
+% LaTeX Template
+% Version 1.0 (27/12/12)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% WikiBooks (http://en.wikibooks.org/wiki/LaTeX/Title_Creation)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\title{Title page with logo}
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage[explicit]{titlesec}
+\usepackage[hyphens,spaces,obeyspaces]{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{grffile}
+\usepackage{listings}
+\usepackage{placeins}
+\usepackage[ 
+    urldate=long, 
+    sorting=none 
+]{biblatex} 
+\addbibresource{mybib.bib} 
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+\begin{document}
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+%----------------------------------------------------------------------------------------
+%	HEADING SECTIONS
+%----------------------------------------------------------------------------------------
+
+\textsc{\LARGE University of St Andrews}\\[1.5cm] % Name of your university/college
+\textsc{\Large Distributed Systems}\\[0.5cm] % Major heading such as course name
+\textsc{\large CS4103}\\[0.5cm] % Minor heading such as course title
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Ring-Based Distributed System}\\[0.4cm] % Title of your document
+\HRule \\[1.5cm]
+ 
+%----------------------------------------------------------------------------------------
+%	AUTHOR SECTION
+%----------------------------------------------------------------------------------------
+
+
+\Large \emph{Author:}\\
+ \textsc{150008022}\\[1cm] % Your name
+ 
+%----------------------------------------------------------------------------------------
+%	DATE SECTION
+%----------------------------------------------------------------------------------------
+
+{\large \today}\\[2cm] % Date, change the \today to a set date if you want to be precise
+
+%----------------------------------------------------------------------------------------
+%	LOGO SECTION
+%---------------------------------------------------------------------------------------
+
+\includegraphics[width = 4cm]{images/standrewslogo.png}
+ 
+%----------------------------------------------------------------------------------------
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+\section*{Goal}
+
+To demonstrate an understanding of leader election and mutual exclusion in distributed systems by developing a ring-based distributed social media application.
+
+\tableofcontents
+\newpage
+
+\pagenumbering{arabic}
+\setcounter{page}{1} 
+
+\section{Initial Set-up}
+
+
+\renewcommand{\arraystretch}{1.5}
+\begin{table}[!ht]
+\centering
+\begin{tabular}{ll}
+\multicolumn{2}{l}{usage: java -jar $\langle$program$\rangle$-with-dependencies.jar}
+\\ 
+
+ -d,--drop           &  Include if this node should trigger a database refresh. \\
+ -e,--election $\langle$arg$\rangle$ &  Election method to use. \\
+ -f,--list $\langle$arg$\rangle$     &  Path to file containing list of nodes (resource P). \\
+ -i,--id $\langle$arg$\rangle$       &  ID of this node. 
+\end{tabular}
+\caption{Arguments for running application.}
+\label{tbl:arguments}
+\end{table}
+
+%\begin{figure}[!ht]
+%	\centering
+%	\includegraphics[width=\linewidth]{images/chang}
+%	\caption{Logs from node 8 when it joins the ring and notices its ID is greater than the current coordinator.}
+%	\label{fig:chang}
+%\end{figure}
+
+\section{Receive/Send Posts}
+
+\subsection{Server}
+
+\begin{table}[!h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lll@{}}
+\toprule
+Message Type                               & Usage                                                                                                                        & Payload                  \\ \midrule
+\multicolumn{1}{l|}{LOGIN}                  & \multicolumn{1}{l|}{Sent by client to declare a username to the node.}                                              & Username \\
+\multicolumn{1}{l|}{JOIN\_GROUP}             & \multicolumn{1}{l|}{Sent by client to subscribe to a group.}                                     & Name of group to join.\\
+\multicolumn{1}{l|}{LEAVE\_GROUP}    & \multicolumn{1}{l|}{Sent by client to unsubscribe from a group.} & Name of group to leave.\\
+\multicolumn{1}{l|}{CHAT\_MESSAGE}                 & \multicolumn{1}{l|}{Text sent between clients.}                                                                        & To, From, Time, Contents \\
+\multicolumn{1}{l|}{ERROR}            & \multicolumn{1}{l|}{Sent by server if an error occurs}                   & Explanation \\ \bottomrule
+\end{tabular}%
+}
+\caption{Messages sent between client and server.}
+\label{tbl:clientmessagetypes}
+\end{table}
+
+\section{Testing}
+
+\section{Summary}
+
+Functionalities implemented:
+\begin{enumerate}
+	\item Dynamic ring formation
+\end{enumerate}
+
+\section{How to Run}
+
+\printbibliography
+
+\end{document}
