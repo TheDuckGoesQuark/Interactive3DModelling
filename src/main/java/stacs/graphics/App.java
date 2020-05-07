@@ -23,13 +23,13 @@ public class App {
     }
 
     public void loop() throws IOException {
-        var faceLoader = new FaceLoader("mesh.csv");
-        var faces = faceLoader.loadFromResources(new String[]{"sh_000.csv", "sh_001.csv", "sh_002.csv"});
+        var faceLoader = new FaceLoader("mesh.csv", "sh_000.csv");
+        var faces = faceLoader.loadFromResources(new String[]{"sh_001.csv", "sh_002.csv", "sh_003.csv"});
         var render = new Render();
 
         while (!window.shouldClose()) {
             render.cleanup();
-            render.render(faces[0].getMesh());
+            render.render(faces[2].getMesh());
             window.update();
         }
     }

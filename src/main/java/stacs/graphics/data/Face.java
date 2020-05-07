@@ -4,8 +4,8 @@ import stacs.graphics.render.Mesh;
 import stacs.graphics.render.MeshLoader;
 
 public class Face {
-    private float MAX = 100000f;
-    private float MIN = -100000f;
+    private float MAX = 150000f;
+    private float MIN = -150000f;
     private final float[] vertices;
     private final int[] indices;
     private final Mesh mesh;

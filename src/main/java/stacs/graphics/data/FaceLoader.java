@@ -1,14 +1,15 @@
 package stacs.graphics.data;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class FaceLoader {
 
     private final int[] indices;
+    private final float[] averageFaceShapeCoords;
 
-    public FaceLoader(String indicesResourceName) throws IOException {
+    public FaceLoader(String indicesResourceName, String averageFaceShapeCoordinatesResourceName) throws IOException {
         indices = loadIndicesFromResource(indicesResourceName);
+        averageFaceShapeCoords = loadCoordinatesFromResource(averageFaceShapeCoordinatesResourceName);
     }
 
     private static int[] loadIndicesFromResource(String indicesResourceName) throws IOException {
@@ -20,7 +21,7 @@ public class FaceLoader {
                 .toArray();
     }
 
-    public Face loadFromResource(String name) throws IOException {
+    private float[] loadCoordinatesFromResource(String name) throws IOException {
         var csvResourceLoader = new CSVResourceLoader();
 
         var vertexStringValues = csvResourceLoader.readToFlatList(name);
@@ -29,6 +30,14 @@ public class FaceLoader {
             vertices[i] = Float.parseFloat(vertexStringValues.get(i));
         }
 
+        return vertices;
+    }
+
+    public Face loadFromResource(String name) throws IOException {
+        var vertices = loadCoordinatesFromResource(name);
+        for (int i = 0; i < vertices.length; i++) {
+            vertices[i] += averageFaceShapeCoords[i];
+        }
         return new Face(vertices, indices);
     }
 
