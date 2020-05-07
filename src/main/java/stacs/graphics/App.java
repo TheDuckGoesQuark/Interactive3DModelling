@@ -1,8 +1,12 @@
 package stacs.graphics;
 
+import stacs.graphics.data.Face;
+import stacs.graphics.data.FaceLoader;
 import stacs.graphics.render.MeshLoader;
 import stacs.graphics.render.Render;
 import stacs.graphics.render.Window;
+
+import java.io.IOException;
 
 /**
  * Hello world!
@@ -11,28 +15,26 @@ public class App {
 
     private static Window window;
 
-    public void run() {
-        window = new Window(640, 480);
+    public void run() throws IOException {
+        window = new Window(800, 1000);
         loop();
         window.terminate();
 
     }
 
-    public void loop() {
-        float[] vertices = {-0.5f, -0.5f, 0f, 0.5f, -0.5f, 0f, 0f, 0.5f, 0f};
-        int[] indices = {0, 1, 2};
-
-        var mesh = MeshLoader.createMesh(vertices, indices);
+    public void loop() throws IOException {
+        var faceLoader = new FaceLoader("mesh.csv");
+        var faces = faceLoader.loadFromResources(new String[]{"sh_000.csv", "sh_001.csv", "sh_002.csv"});
         var render = new Render();
 
         while (!window.shouldClose()) {
             render.cleanup();
-            render.render(mesh);
+            render.render(faces[0].getMesh());
             window.update();
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new App().run();
     }
 }
