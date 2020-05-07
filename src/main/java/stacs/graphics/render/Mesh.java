@@ -1,6 +1,7 @@
-package stacs.graphics;
+package stacs.graphics.render;
 
 public class Mesh {
+
     private int vao;
     private int vertices;
 
