@@ -23,7 +23,7 @@ public class FaceLoader {
     }
 
     private static float[] loadFloatsFromCSV(String weightingsResourceName) throws IOException {
-        var csvResourceLoader = new CSVResourceLoader();
+        var csvResourceLoader = ResourceLoader.getInstance();
 
         var weightingStringValues = csvResourceLoader.readToFlatList(weightingsResourceName);
         var weightings = new float[weightingStringValues.size()];
@@ -35,7 +35,7 @@ public class FaceLoader {
     }
 
     private static int[] loadIndicesFromResource(String indicesResourceName) throws IOException {
-        var csvResourceLoader = new CSVResourceLoader();
+        var csvResourceLoader = ResourceLoader.getInstance();
 
         return csvResourceLoader.readToFlatList(indicesResourceName)
                 .stream()

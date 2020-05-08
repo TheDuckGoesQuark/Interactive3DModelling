@@ -13,25 +13,28 @@ public class App {
 
     private static Window window;
 
-    public void run() throws IOException {
+    public void run() throws Exception {
         window = new Window(800, 1000);
         loop();
         window.terminate();
     }
 
-    public void loop() throws IOException {
+    public void loop() throws Exception {
         var faceLoader = new FaceLoader("mesh.csv", "sh_000.csv", "sh_ev.csv", "tx_ev.csv");
         var faces = faceLoader.loadFromResources(new int[]{1, 2, 3});
-        var render = new Render();
+        var render = new Render("shaders/fragment.shader", "shaders/vertex.shader");
+        render.init();
 
         while (!window.shouldClose()) {
             render.cleanup();
             render.render(faces[0].getMesh());
             window.update();
         }
+
+        render.cleanup();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         new App().run();
     }
 }

@@ -11,6 +11,8 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.system.MemoryUtil.memFree;
+
 public class MeshLoader {
 
     private static List<Integer> VAOS = new ArrayList<>();
