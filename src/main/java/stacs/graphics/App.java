@@ -20,7 +20,7 @@ public class App {
     }
 
     public void loop() throws IOException {
-        var faceLoader = new FaceLoader("mesh.csv", "sh_000.csv", "sh_ev.csv");
+        var faceLoader = new FaceLoader("mesh.csv", "sh_000.csv", "sh_ev.csv", "tx_ev.csv");
         var faces = faceLoader.loadFromResources(new int[]{1, 2, 3});
         var render = new Render();
 
