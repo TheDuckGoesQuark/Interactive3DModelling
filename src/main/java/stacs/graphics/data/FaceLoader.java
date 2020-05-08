@@ -51,8 +51,9 @@ public class FaceLoader {
         var name = String.format("sh_%03d.csv", faceNumber);
         var vertices = loadCoordinatesFromResource(name);
         for (int i = 0; i < vertices.length; i++) {
-            vertices[i] += (averageFaceShapeCoords[i] * weightings[faceNumber]);
+            vertices[i] = averageFaceShapeCoords[i] + (weightings[faceNumber] * vertices[i]);
         }
+
         return new Face(vertices, indices);
     }
 
