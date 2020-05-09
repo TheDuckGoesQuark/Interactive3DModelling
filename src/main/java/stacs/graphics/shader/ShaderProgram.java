@@ -41,7 +41,7 @@ public class ShaderProgram {
         glShaderSource(shaderId, shaderCode);
         glCompileShader(shaderId);
 
-        if (glGetShaderi(shaderId, GL_COMPILE_STATUS) == 0) {
+        if (glGetShaderi(shaderId, GL_COMPILE_STATUS) == GL_FALSE) {
             throw new Exception("Error compiling Shader code: " + glGetShaderInfoLog(shaderId, 1024));
         }
 
@@ -51,26 +51,14 @@ public class ShaderProgram {
     }
 
     public void link() throws Exception {
-        // bind variable name to attribute index
-        GL20.glBindAttribLocation(programId, Attribute.COORDINATES.getIndex(), "position");
-        GL20.glBindAttribLocation(programId, Attribute.COLOUR.getIndex(), "colour");
-        GL30.glBindFragDataLocation(programId, 0, "fragColour");
-
         glLinkProgram(programId);
 
-        if (glGetProgrami(programId, GL_LINK_STATUS) == 0) {
+        if (glGetProgrami(programId, GL_LINK_STATUS) == GL_FALSE) {
             throw new Exception("Error linking Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
 
-        if (vertexShaderId != 0) {
-            glDetachShader(programId, vertexShaderId);
-        }
-        if (fragmentShaderId != 0) {
-            glDetachShader(programId, fragmentShaderId);
-        }
-
         glValidateProgram(programId);
-        if (glGetProgrami(programId, GL_VALIDATE_STATUS) == 0) {
+        if (glGetProgrami(programId, GL_VALIDATE_STATUS) == GL_FALSE) {
             System.err.println("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
     }

@@ -1,11 +1,11 @@
 #version 130
 
-in vec3 position;
-in vec3 colour;
+in vec3 in_position;
+in vec3 in_colour;
 
 out vec3 exColour;
 
 void main() {
-    gl_Position = vec4(position, 1.0);
-    exColour = colour;
+    gl_Position = vec4(in_position, 1.0);
+    exColour = in_colour;
 }

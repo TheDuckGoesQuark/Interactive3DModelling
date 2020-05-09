@@ -36,7 +36,6 @@ public class App {
         render.init();
 
         while (!window.shouldClose()) {
-            render.cleanup();
             render.render(faces[0].getMesh());
             window.update();
         }

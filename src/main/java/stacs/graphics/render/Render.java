@@ -55,8 +55,4 @@ public class Render {
 
         shaderProgram.unbind();
     }
-
-    public ShaderProgram getShaderProgram() {
-        return shaderProgram;
-    }
 }
