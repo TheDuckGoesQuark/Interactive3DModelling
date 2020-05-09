@@ -55,7 +55,8 @@ public class FaceLoader {
         var coloursResourceName = String.format("tx_%03d.csv", faceNumber);
         var colours = loadFloatsFromCSV(coloursResourceName);
         for (int i = 0; i < colours.length; i++) {
-            colours[i] = averageFaceColour[i] + (colourWeightings[faceNumber] * colours[i]);
+            // calculate colour using description from practical spec
+            colours[i] = (averageFaceColour[i] + (colourWeightings[faceNumber] * colours[i])) / 256;
         }
 
         return new Face(vertices, colours, indices);

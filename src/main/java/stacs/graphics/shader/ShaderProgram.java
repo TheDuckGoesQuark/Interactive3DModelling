@@ -1,6 +1,8 @@
 package stacs.graphics.shader;
 
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.system.MemoryUtil;
 import stacs.graphics.render.Attribute;
 
 import static org.lwjgl.opengl.GL20.*;
@@ -20,10 +22,6 @@ public class ShaderProgram {
         if (programId == 0) {
             throw new Exception("Could not create Shader");
         }
-
-        // bind variable name to attribute index
-        GL20.glBindAttribLocation(programId, Attribute.COORDINATES.getIndex(), "position");
-        GL20.glBindAttribLocation(programId, Attribute.COLOUR.getIndex(), "colour");
     }
 
     public void createVertexShader(String shaderCode) throws Exception {
@@ -53,6 +51,11 @@ public class ShaderProgram {
     }
 
     public void link() throws Exception {
+        // bind variable name to attribute index
+        GL20.glBindAttribLocation(programId, Attribute.COORDINATES.getIndex(), "position");
+        GL20.glBindAttribLocation(programId, Attribute.COLOUR.getIndex(), "colour");
+        GL30.glBindFragDataLocation(programId, 0, "fragColour");
+
         glLinkProgram(programId);
 
         if (glGetProgrami(programId, GL_LINK_STATUS) == 0) {
@@ -85,5 +88,9 @@ public class ShaderProgram {
         if (programId != 0) {
             glDeleteProgram(programId);
         }
+    }
+
+    public int getProgramId() {
+        return programId;
     }
 }

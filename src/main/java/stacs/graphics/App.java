@@ -4,6 +4,8 @@ import stacs.graphics.data.FaceLoader;
 import stacs.graphics.render.Render;
 import stacs.graphics.render.Window;
 
+import static org.lwjgl.opengl.GL20.glGetAttribLocation;
+
 /**
  * Hello world!
  */
@@ -26,7 +28,10 @@ public class App {
                 "tx_ev.csv"
         );
         var faces = faceLoader.loadFromResources(new int[]{1, 2, 3});
-        var render = new Render("shaders/fragment.shader", "shaders/vertex.shader");
+        var render = new Render(
+                "shaders/fragment.shader",
+                "shaders/vertex.shader"
+        );
 
         render.init();
 

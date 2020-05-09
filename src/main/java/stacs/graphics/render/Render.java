@@ -1,6 +1,7 @@
 package stacs.graphics.render;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import stacs.graphics.data.ResourceLoader;
@@ -53,5 +54,9 @@ public class Render {
         GL30.glBindVertexArray(0);
 
         shaderProgram.unbind();
+    }
+
+    public ShaderProgram getShaderProgram() {
+        return shaderProgram;
     }
 }
