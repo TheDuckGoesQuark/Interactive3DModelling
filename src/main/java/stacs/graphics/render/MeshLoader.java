@@ -11,8 +11,6 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.system.MemoryUtil.memFree;
-
 public class MeshLoader {
 
     private static List<Integer> VAOS = new ArrayList<>();
@@ -32,13 +30,13 @@ public class MeshLoader {
         return buffer;
     }
 
-    private static void storeData(int attribute, int dimensions, float[] data) {
+    private static void storeData(Attribute attribute, int dimensions, float[] data) {
         int vbo = GL15.glGenBuffers(); //Creates a VBO ID
         VBOS.add(vbo);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
-        FloatBuffer buffer = createFloatBuffer(data);
+        var buffer = createFloatBuffer(data);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
-        GL20.glVertexAttribPointer(attribute, dimensions, GL11.GL_FLOAT, false, 0, 0);
+        GL20.glVertexAttribPointer(attribute.getIndex(), dimensions, GL11.GL_FLOAT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
     }
 
@@ -50,18 +48,19 @@ public class MeshLoader {
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
     }
 
-    public static Mesh createMesh(float[] positions, int[] indices) {
-        int vao = genVAO();
-        storeData(0, 3, positions);
-        bindIndices(indices);
-        GL30.glBindVertexArray(0);
-        return new Mesh(vao, indices.length);
-    }
-
     private static int genVAO() {
         int vao = GL30.glGenVertexArrays();
         VAOS.add(vao);
         GL30.glBindVertexArray(vao);
         return vao;
+    }
+
+    public static Mesh createMesh(float[] positions, float[] colours, int[] indices) {
+        int vao = genVAO();
+        storeData(Attribute.COORDINATES, 3, positions);
+        storeData(Attribute.COLOUR, 3, colours);
+        bindIndices(indices);
+        GL30.glBindVertexArray(0);
+        return new Mesh(vao, indices.length);
     }
 }

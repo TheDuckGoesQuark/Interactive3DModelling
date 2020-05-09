@@ -32,6 +32,11 @@ public class ResourceLoader {
 
     public List<String> readToFlatList(String resourceName) throws IOException {
         var resourceStream = ResourceLoader.class.getResourceAsStream("/" + resourceName);
+
+        if (resourceStream == null) {
+            throw new IOException("Unable to find resource: " + resourceName);
+        }
+
         var reader = new BufferedReader(new InputStreamReader(resourceStream));
 
         var values = new ArrayList<String>();

@@ -19,7 +19,10 @@ public class Render {
 
     public void cleanup() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        shaderProgram.cleanup();
+
+        if (shaderProgram != null) {
+            shaderProgram.cleanup();
+        }
     }
 
     public void init() throws Exception {
@@ -34,10 +37,21 @@ public class Render {
     }
 
     public void render(Mesh mesh) {
+        shaderProgram.bind();
+
+        // bind to the VAO
         GL30.glBindVertexArray(mesh.getVaoID());
-        GL20.glEnableVertexAttribArray(0);
+        GL20.glEnableVertexAttribArray(Attribute.COORDINATES.getIndex());
+        GL20.glEnableVertexAttribArray(Attribute.COLOUR.getIndex());
+
+        // draw the vertices
         GL11.glDrawElements(GL11.GL_TRIANGLES, mesh.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
-        GL20.glDisableVertexAttribArray(0);
+
+        // restore state
+        GL20.glDisableVertexAttribArray(Attribute.COORDINATES.getIndex());
+        GL20.glDisableVertexAttribArray(Attribute.COLOUR.getIndex());
         GL30.glBindVertexArray(0);
+
+        shaderProgram.unbind();
     }
 }

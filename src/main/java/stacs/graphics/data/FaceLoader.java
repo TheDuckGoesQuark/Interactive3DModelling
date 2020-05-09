@@ -13,12 +13,14 @@ public class FaceLoader {
     public FaceLoader(String indicesResourceName,
                       String averageFaceShapeCoordinatesResourceName,
                       String vertexWeightingsResourceName,
-                      String colourWeightingsResourceName
-    ) throws IOException {
+                      String averageFaceColoursResourceName,
+                      String colourWeightingsResourceName) throws IOException {
         indices = loadIndicesFromResource(indicesResourceName);
+
         averageFaceShapeCoords = loadFloatsFromCSV(averageFaceShapeCoordinatesResourceName);
         vertexWeightings = loadFloatsFromCSV(vertexWeightingsResourceName);
-        averageFaceColour = loadFloatsFromCSV(averageFaceShapeCoordinatesResourceName);
+
+        averageFaceColour = loadFloatsFromCSV(averageFaceColoursResourceName);
         colourWeightings = loadFloatsFromCSV(colourWeightingsResourceName);
     }
 
@@ -44,13 +46,19 @@ public class FaceLoader {
     }
 
     public Face loadFromResource(int faceNumber) throws IOException {
-        var name = String.format("sh_%03d.csv", faceNumber);
-        var vertices = loadFloatsFromCSV(name);
+        var coordinatesResourceName = String.format("sh_%03d.csv", faceNumber);
+        var vertices = loadFloatsFromCSV(coordinatesResourceName);
         for (int i = 0; i < vertices.length; i++) {
             vertices[i] = averageFaceShapeCoords[i] + (vertexWeightings[faceNumber] * vertices[i]);
         }
 
-        return new Face(vertices, indices);
+        var coloursResourceName = String.format("tx_%03d.csv", faceNumber);
+        var colours = loadFloatsFromCSV(coloursResourceName);
+        for (int i = 0; i < colours.length; i++) {
+            colours[i] = averageFaceColour[i] + (colourWeightings[faceNumber] * colours[i]);
+        }
+
+        return new Face(vertices, colours, indices);
     }
 
     public Face[] loadFromResources(int[] faceNumbers) throws IOException {

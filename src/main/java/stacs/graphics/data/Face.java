@@ -7,13 +7,15 @@ public class Face {
     private float MAX = 150000f;
     private float MIN = -150000f;
     private final float[] vertices;
+    private final float[] colours;
     private final int[] indices;
     private final Mesh mesh;
 
-    public Face(float[] vertices, int[] indices) {
+    public Face(float[] vertices, float[] colours, int[] indices) {
         this.vertices = vertices;
+        this.colours = colours;
         this.indices = indices;
-        this.mesh = MeshLoader.createMesh(normalise(this.vertices), this.indices);
+        this.mesh = MeshLoader.createMesh(normalise(this.vertices), colours, this.indices);
     }
 
     private float[] normalise(float[] vertices) {

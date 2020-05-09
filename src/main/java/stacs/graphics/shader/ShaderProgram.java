@@ -1,6 +1,7 @@
 package stacs.graphics.shader;
 
 import org.lwjgl.opengl.GL20;
+import stacs.graphics.render.Attribute;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -20,7 +21,9 @@ public class ShaderProgram {
             throw new Exception("Could not create Shader");
         }
 
-        GL20.glBindAttribLocation(programId, 0, "position");
+        // bind variable name to attribute index
+        GL20.glBindAttribLocation(programId, Attribute.COORDINATES.getIndex(), "position");
+        GL20.glBindAttribLocation(programId, Attribute.COLOUR.getIndex(), "colour");
     }
 
     public void createVertexShader(String shaderCode) throws Exception {
