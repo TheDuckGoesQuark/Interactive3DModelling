@@ -1,40 +1,28 @@
 package stacs.graphics.data;
 
-import stacs.graphics.render.Mesh;
 import stacs.graphics.render.MeshLoader;
+import stacs.graphics.render.Renderable;
 
-public class Face {
-    private float MAX = 150000f;
-    private float MIN = -150000f;
+public class Face extends Renderable {
+    private static final float MAX = 150000f;
+    private static final float MIN = -150000f;
+
     private final float[] vertices;
     private final float[] colours;
     private final int[] indices;
-    private final Mesh mesh;
 
     public Face(float[] vertices, float[] colours, int[] indices) {
+        super(MeshLoader.createMesh(normalise(vertices), colours, indices));
         this.vertices = vertices;
         this.colours = colours;
         this.indices = indices;
-        this.mesh = MeshLoader.createMesh(normalise(this.vertices), colours, this.indices);
     }
 
-    private float[] normalise(float[] vertices) {
+    private static float[] normalise(float[] vertices) {
         float[] normalised = new float[vertices.length];
         for (int i = 0; i < vertices.length; i++) {
             normalised[i] = 2f * ((vertices[i] - MIN) / (MAX - MIN)) - 1f;
         }
         return normalised;
-    }
-
-    public float[] getVertices() {
-        return vertices;
-    }
-
-    public int[] getIndices() {
-        return indices;
-    }
-
-    public Mesh getMesh() {
-        return mesh;
     }
 }

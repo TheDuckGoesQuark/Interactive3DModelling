@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -16,12 +17,18 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window {
 
     private long window;
+    private boolean resized;
+    private int width;
+    private int height;
 
     public Window(int width, int height) {
-        init(width, height);
+        this.resized = false;
+        this.width = width;
+        this.height = height;
+        init();
     }
 
-    private void init(int width, int height) {
+    private void init() {
         // Print errors to console
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -38,6 +45,13 @@ public class Window {
         if (window == NULL) {
             throw new IllegalStateException("Unable to create GLFW Window");
         }
+
+        // Setup resize callback
+        GLFW.glfwSetFramebufferSizeCallback(window, (window, width, height) -> {
+            this.width = width;
+            this.height = height;
+            this.setResized(true);
+        });
 
         GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
         });
@@ -58,6 +72,7 @@ public class Window {
         }
 
         GL.createCapabilities();
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 
     public void update() {
@@ -75,5 +90,25 @@ public class Window {
 
         GLFW.glfwTerminate();
         GLFW.glfwSetErrorCallback(null).free();
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setClearColour(float r, float g, float b, float alpha) {
+        GL11.glClearColor(r, g, b, alpha);
+    }
+
+    public boolean isResized() {
+        return resized;
+    }
+
+    public void setResized(boolean resized) {
+        this.resized = resized;
     }
 }

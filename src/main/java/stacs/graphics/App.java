@@ -28,19 +28,20 @@ public class App {
                 "tx_ev.csv"
         );
         var faces = faceLoader.loadFromResources(new int[]{1, 2, 3});
-        var render = new Render(
+        var renderer = new Render(
                 "shaders/fragment.shader",
                 "shaders/vertex.shader"
         );
 
-        render.init();
+        renderer.init(window);
 
         while (!window.shouldClose()) {
-            render.render(faces[0].getMesh());
+            renderer.clear();
+            renderer.render(faces[0], window);
             window.update();
         }
 
-        render.cleanup();
+        renderer.cleanup();
     }
 
     public static void main(String[] args) throws Exception {

@@ -1,9 +1,11 @@
 package stacs.graphics.shader;
 
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryUtil;
-import stacs.graphics.render.Attribute;
+import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
+
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -12,6 +14,7 @@ import static org.lwjgl.opengl.GL20.*;
  */
 public class ShaderProgram {
 
+    private final Map<String, Integer> uniforms;
     private final int programId;
     private int vertexShaderId;
     private int fragmentShaderId;
@@ -21,6 +24,24 @@ public class ShaderProgram {
 
         if (programId == 0) {
             throw new Exception("Could not create Shader");
+        }
+
+        uniforms = new HashMap<>();
+    }
+
+    public void createUniform(String uniformName) throws Exception {
+        var uniformLocation = glGetUniformLocation(programId, uniformName);
+        if (uniformLocation < 0) {
+            throw new Exception("Could not find uniform: " + uniformName);
+        }
+        uniforms.put(uniformName, uniformLocation);
+    }
+
+    public void setUniform(String uniformName, Matrix4f value) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer fb = stack.mallocFloat(16);
+            value.get(fb);
+            glUniformMatrix4fv(uniforms.get(uniformName), false, fb);
         }
     }
 
@@ -73,6 +94,7 @@ public class ShaderProgram {
 
     public void cleanup() {
         unbind();
+
         if (programId != 0) {
             glDeleteProgram(programId);
         }
