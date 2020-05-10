@@ -4,31 +4,30 @@ package stacs.graphics.render;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.MemoryStack;
 
-import java.nio.IntBuffer;
-
-import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
 
-    private long window;
-    private boolean resized;
+    private final String title;
     private int width;
     private int height;
+    private long window;
+    private boolean resized;
+    private boolean vsync;
 
-    public Window(int width, int height) {
+    public Window(String title, int width, int height, boolean vsync) {
+        this.title = title;
         this.resized = false;
         this.width = width;
         this.height = height;
-        init();
+        this.vsync = vsync;
     }
 
-    private void init() {
+    public void init() {
         // Print errors to console
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -41,7 +40,7 @@ public class Window {
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
 
-        window = GLFW.glfwCreateWindow(width, height, "Interactive 3D Modelling", NULL, NULL);
+        window = GLFW.glfwCreateWindow(width, height, title, NULL, NULL);
         if (window == NULL) {
             throw new IllegalStateException("Unable to create GLFW Window");
         }
@@ -53,25 +52,32 @@ public class Window {
             this.setResized(true);
         });
 
+        // setup key callback
         GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+                GLFW.glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+            }
         });
 
-        try (MemoryStack stack = stackPush()) {
-            IntBuffer pWidth = stack.mallocInt(1);
-            IntBuffer pHeight = stack.mallocInt(1);
+        // center the window on the screen
+        var vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
+        GLFW.glfwSetWindowPos(window, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
 
-            GLFW.glfwGetWindowSize(window, pWidth, pHeight);
+        GLFW.glfwMakeContextCurrent(window);
 
-            GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-
-            GLFW.glfwSetWindowPos(window, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
-
-            GLFW.glfwMakeContextCurrent(window);
+        // ensure that new buffer is only sent once a render is complete
+        if (vsync) {
             GLFW.glfwSwapInterval(1);
-            GLFW.glfwShowWindow(window);
         }
 
+        // make window visible
+        GLFW.glfwShowWindow(window);
+
         GL.createCapabilities();
+
+        // set clear colour
+        GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        // fixes order triangles are drawn in
         GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 
@@ -100,6 +106,10 @@ public class Window {
         return height;
     }
 
+    public long getWindowHandle() {
+        return window;
+    }
+
     public void setClearColour(float r, float g, float b, float alpha) {
         GL11.glClearColor(r, g, b, alpha);
     }
@@ -110,5 +120,13 @@ public class Window {
 
     public void setResized(boolean resized) {
         this.resized = resized;
+    }
+
+    public boolean isKeyPressed(int keyCode) {
+        return glfwGetKey(window, keyCode) == GLFW_PRESS;
+    }
+
+    public boolean isVsync() {
+        return vsync;
     }
 }
