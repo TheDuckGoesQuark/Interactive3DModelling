@@ -43,7 +43,7 @@ public class Render {
         shaderProgram.link();
 
 //        shaderProgram.createUniform(PROJECTION_MATRIX_UNIFORM_NAME);
-//        shaderProgram.createUniform(WORLD_MATRIX_UNIFORM_NAME);
+        shaderProgram.createUniform(WORLD_MATRIX_UNIFORM_NAME);
 
         window.setClearColour(0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -66,7 +66,7 @@ public class Render {
                 renderable.getRotation(),
                 renderable.getScale()
         );
-//        shaderProgram.setUniform(WORLD_MATRIX_UNIFORM_NAME, worldMatrix);
+        shaderProgram.setUniform(WORLD_MATRIX_UNIFORM_NAME, worldMatrix);
         renderable.getMesh().render();
 
         shaderProgram.unbind();

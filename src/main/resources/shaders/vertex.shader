@@ -10,6 +10,6 @@ uniform mat4 projectionMatrix;
 
 void main() {
     //    gl_Position = projectionMatrix * worldMatrix * vec4(in_position, 1.0);
-    gl_Position =  vec4(in_position, 1.0);
+    gl_Position =  worldMatrix * vec4(in_position, 1.0);
     exColour = in_colour;
 }
