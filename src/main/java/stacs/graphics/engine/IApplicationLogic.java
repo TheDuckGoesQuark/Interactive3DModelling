@@ -1,6 +1,5 @@
 package stacs.graphics.engine;
 
-import stacs.graphics.engine.MouseInput;
 import stacs.graphics.render.Window;
 
 public interface IApplicationLogic {

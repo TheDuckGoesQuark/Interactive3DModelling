@@ -12,7 +12,7 @@ import stacs.graphics.render.Window;
 
 public class Interactive3DModel implements IApplicationLogic {
 
-    private static final float CAMERA_POS_STEP = 0.05f;
+    private static final float CAMERA_POS_STEP = 0.5f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
     private final Vector3f cameraInc;
     private final Renderer renderer;
@@ -57,9 +57,9 @@ public class Interactive3DModel implements IApplicationLogic {
         } else if (window.isKeyPressed(GLFW.GLFW_KEY_D)) {
             cameraInc.x = 1;
         }
-        if (window.isKeyPressed(GLFW.GLFW_KEY_Z)) {
+        if (window.isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT)) {
             cameraInc.y = -1;
-        } else if (window.isKeyPressed(GLFW.GLFW_KEY_X)) {
+        } else if (window.isKeyPressed(GLFW.GLFW_KEY_SPACE)) {
             cameraInc.y = 1;
         }
     }
@@ -82,7 +82,7 @@ public class Interactive3DModel implements IApplicationLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(renderables[0], window, camera);
+        renderer.render(renderables[1], window, camera);
     }
 
     @Override

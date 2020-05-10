@@ -12,8 +12,8 @@ public abstract class Renderable {
     public Renderable(Mesh mesh) {
         this.mesh = mesh;
         this.position = new Vector3f(0, 0, 0);
-        this.scale = 0.00001f;
-        this.rotation = new Vector3f(0, 180, 0);
+        this.scale = 0.0001f;
+        this.rotation = new Vector3f(0, 0, 0);
     }
 
     public Vector3f getPosition() {

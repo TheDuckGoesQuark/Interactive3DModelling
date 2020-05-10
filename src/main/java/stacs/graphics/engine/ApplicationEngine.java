@@ -4,7 +4,7 @@ import stacs.graphics.render.Window;
 
 public class ApplicationEngine implements Runnable {
 
-    private static final float TARGET_FPS = 30;
+    private static final float TARGET_FPS = 60;
     private static final float TARGET_UPS = 30;
     private final Window window;
     private final Timer timer;
