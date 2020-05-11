@@ -41,7 +41,7 @@ public class Interactive3DModel implements IApplicationLogic {
                 "tx_ev.csv"
         );
 
-        renderables = faceLoader.loadFromResources(new int[]{1, 2, 3});
+        renderables = faceLoader.loadFromResources(new int[]{1});
     }
 
     @Override
@@ -82,7 +82,7 @@ public class Interactive3DModel implements IApplicationLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(renderables[1], window, camera);
+        renderer.render(renderables, window, camera);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class Renderer {
         shaderProgram.createUniform(MODEL_VIEW_MATRIX_NAME);
     }
 
-    public void render(Renderable renderable, Window window, Camera camera) {
+    public void render(Renderable[] renderables, Window window, Camera camera) {
         clear();
 
         if (window.isResized()) {
@@ -61,11 +61,13 @@ public class Renderer {
         shaderProgram.setUniform(PROJECTION_MATRIX_UNIFORM_NAME, projectionMatrix);
 
         var viewMatrix = transformation.getViewMatrix(camera);
-        var modelViewMatrix = transformation.getModelViewMatrix(renderable, viewMatrix);
-        shaderProgram.setUniform(MODEL_VIEW_MATRIX_NAME, modelViewMatrix);
 
         // draw the vertices
-        renderable.getMesh().render();
+        for (Renderable renderable : renderables) {
+            var modelViewMatrix = transformation.getModelViewMatrix(renderable, viewMatrix);
+            shaderProgram.setUniform(MODEL_VIEW_MATRIX_NAME, modelViewMatrix);
+            renderable.getMesh().render();
+        }
 
         shaderProgram.unbind();
     }
