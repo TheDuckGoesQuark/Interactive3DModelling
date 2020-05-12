@@ -3,9 +3,6 @@ package stacs.graphics.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,34 +18,39 @@ public class ResourceLoader {
         return instance;
     }
 
-    public String readAllToString(String resourceName) throws Exception {
-        try {
-            var resource = ResourceLoader.class.getResource("/" + resourceName);
-            return new String(Files.readAllBytes(Paths.get(resource.toURI())));
-        } catch (URISyntaxException e) {
-            throw new Exception(e.getMessage());
-        }
-    }
-
-    public List<String> readToFlatList(String resourceName) throws IOException {
+    private BufferedReader getResourceReader(String resourceName) throws IOException {
         var resourceStream = ResourceLoader.class.getResourceAsStream("/" + resourceName);
 
         if (resourceStream == null) {
             throw new IOException("Unable to find resource: " + resourceName);
         }
 
-        var reader = new BufferedReader(new InputStreamReader(resourceStream));
+        return new BufferedReader(new InputStreamReader(resourceStream));
+    }
 
+    public String readAllToString(String resourceName) throws Exception {
+        var sb = new StringBuilder();
+
+        try (var resourceReader = getResourceReader(resourceName)) {
+            var line = "";
+            while ((line = resourceReader.readLine()) != null) {
+                sb.append(line);
+                sb.append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    public List<String> readToFlatList(String resourceName) throws IOException {
         var values = new ArrayList<String>();
-        try {
+
+        try (var reader = getResourceReader(resourceName)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 var entries = line.split(",");
                 values.addAll(Arrays.asList(entries));
             }
-        } finally {
-            reader.close();
-            resourceStream.close();
         }
 
         return values;
