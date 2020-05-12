@@ -5,10 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import stacs.graphics.data.FaceLoader;
 import stacs.graphics.engine.IApplicationLogic;
 import stacs.graphics.engine.MouseInput;
-import stacs.graphics.render.Camera;
-import stacs.graphics.render.Renderable;
-import stacs.graphics.render.Renderer;
-import stacs.graphics.render.Window;
+import stacs.graphics.render.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +18,7 @@ public class Interactive3DModel implements IApplicationLogic {
     private final Vector3f cameraInc;
     private final Renderer renderer;
     private final Camera camera;
-    private List<Renderable> renderables;
+    private final SceneRoot sceneRoot;
 
 
     public Interactive3DModel() {
@@ -31,7 +28,7 @@ public class Interactive3DModel implements IApplicationLogic {
         );
         this.camera = new Camera();
         this.cameraInc = new Vector3f();
-        this.renderables = new ArrayList<>();
+        this.sceneRoot = new SceneRoot();
     }
 
     @Override
@@ -51,7 +48,7 @@ public class Interactive3DModel implements IApplicationLogic {
         // prepare interpolation triangle
         var selectionArea = new SelectionArea();
         selectionArea.addControlFaces(controlFaces);
-        renderables.add(selectionArea);
+        sceneRoot.addChild(selectionArea);
     }
 
     @Override
@@ -92,7 +89,7 @@ public class Interactive3DModel implements IApplicationLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(renderables, window, camera);
+        renderer.render(sceneRoot, window, camera);
     }
 
     @Override

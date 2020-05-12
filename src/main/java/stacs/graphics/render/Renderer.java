@@ -1,15 +1,13 @@
 package stacs.graphics.render;
 
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import stacs.graphics.data.ResourceLoader;
 
-import java.util.List;
-
 public class Renderer {
 
-    private static final String MODEL_VIEW_MATRIX_NAME = "modelViewMatrix";
-    private static final String PROJECTION_MATRIX_UNIFORM_NAME = "projectionMatrix";
+    public static final String WORLD_MATRIX_NAME = "worldMatrix";
+    public static final String PROJECTION_MATRIX_UNIFORM_NAME = "projectionMatrix";
+    public static final String VIEW_MATRIX_NAME = "viewMatrix";
     private static final float FOV = (float) Math.toRadians(60.0f);
     private static final float Z_NEAR = 0.01f;
     private static final float Z_FAR = 100.f;
@@ -45,10 +43,11 @@ public class Renderer {
         shaderProgram.link();
 
         shaderProgram.createUniform(PROJECTION_MATRIX_UNIFORM_NAME);
-        shaderProgram.createUniform(MODEL_VIEW_MATRIX_NAME);
+        shaderProgram.createUniform(VIEW_MATRIX_NAME);
+        shaderProgram.createUniform(WORLD_MATRIX_NAME);
     }
 
-    public void render(List<Renderable> renderables, Window window, Camera camera) {
+    public void render(SceneRoot sceneRoot, Window window, Camera camera) {
         clear();
 
         if (window.isResized()) {
@@ -63,25 +62,10 @@ public class Renderer {
         shaderProgram.setUniform(PROJECTION_MATRIX_UNIFORM_NAME, projectionMatrix);
 
         var viewMatrix = transformation.getViewMatrix(camera);
+        shaderProgram.setUniform(VIEW_MATRIX_NAME, viewMatrix);
 
-        for (Renderable renderable : renderables) {
-            // create root modelviewmatrix
-            var modelViewMatrix = transformation.getModelViewMatrix(renderable, viewMatrix);
-            renderRecursively(renderable, viewMatrix, modelViewMatrix);
-        }
+        sceneRoot.render(null, shaderProgram, transformation);
 
         shaderProgram.unbind();
-    }
-
-    private void renderRecursively(Renderable renderable, Matrix4f viewMatrix, Matrix4f modelViewMatrix) {
-        // draw the parent
-        shaderProgram.setUniform(MODEL_VIEW_MATRIX_NAME, modelViewMatrix);
-        renderable.getMesh().render();
-
-        // draw its children
-        for(Renderable child : renderable.getChildren()) {
-            var childModelViewMatrix = transformation.getModelViewMatrix(child, viewMatrix);
-            renderRecursively(child, viewMatrix, childModelViewMatrix);
-        }
     }
 }

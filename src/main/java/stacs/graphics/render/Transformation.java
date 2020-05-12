@@ -6,12 +6,12 @@ import org.joml.Vector3f;
 public class Transformation {
 
     private final Matrix4f projectionMatrix;
-    private final Matrix4f modelViewMatrix;
+    private final Matrix4f worldMatrix;
     private final Matrix4f viewMatrix;
 
     public Transformation() {
         this.projectionMatrix = new Matrix4f();
-        this.modelViewMatrix = new Matrix4f();
+        this.worldMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
     }
 
@@ -32,14 +32,14 @@ public class Transformation {
         return viewMatrix;
     }
 
-    public Matrix4f getModelViewMatrix(Renderable renderable, Matrix4f viewMatrix) {
+    public Matrix4f getWorldMatrix(Renderable renderable) {
         Vector3f rotation = renderable.getRotation();
-        modelViewMatrix.identity().translate(renderable.getPosition()).
+        worldMatrix.identity().translate(renderable.getPosition()).
                 rotateX((float) Math.toRadians(-rotation.x)).
                 rotateY((float) Math.toRadians(-rotation.y)).
                 rotateZ((float) Math.toRadians(-rotation.z)).
                 scale(renderable.getScale());
-        Matrix4f viewCurr = new Matrix4f(viewMatrix);
-        return viewCurr.mul(modelViewMatrix);
+
+        return worldMatrix;
     }
 }
