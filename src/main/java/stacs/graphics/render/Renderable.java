@@ -2,8 +2,12 @@ package stacs.graphics.render;
 
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Renderable {
 
+    private final List<Renderable> children;
     private final Mesh mesh;
     private final Vector3f position;
     private final Vector3f rotation;
@@ -12,8 +16,9 @@ public abstract class Renderable {
     public Renderable(Mesh mesh) {
         this.mesh = mesh;
         this.position = new Vector3f(0, 0, 0);
-        this.scale = 0.0001f;
+        this.scale = 1;
         this.rotation = new Vector3f(0, 0, 0);
+        this.children = new ArrayList<>();
     }
 
     public Vector3f getPosition() {
@@ -46,5 +51,17 @@ public abstract class Renderable {
 
     public Mesh getMesh() {
         return mesh;
+    }
+
+    public List<Renderable> getChildren() {
+        return children;
+    }
+
+    public void addChild(Renderable renderable) {
+        children.add(renderable);
+    }
+
+    public void removeChild(Renderable renderable) {
+        children.remove(renderable);
     }
 }

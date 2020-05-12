@@ -10,14 +10,18 @@ import stacs.graphics.render.Renderable;
 import stacs.graphics.render.Renderer;
 import stacs.graphics.render.Window;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Interactive3DModel implements IApplicationLogic {
 
-    private static final float CAMERA_POS_STEP = 0.5f;
+    private static final float CAMERA_POS_STEP = 0.05f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
     private final Vector3f cameraInc;
     private final Renderer renderer;
     private final Camera camera;
-    private Renderable[] renderables;
+    private List<Renderable> renderables;
 
 
     public Interactive3DModel() {
@@ -27,12 +31,14 @@ public class Interactive3DModel implements IApplicationLogic {
         );
         this.camera = new Camera();
         this.cameraInc = new Vector3f();
+        this.renderables = new ArrayList<>();
     }
 
     @Override
     public void init() throws Exception {
         renderer.init();
 
+        // load control faces
         var faceLoader = new FaceLoader(
                 "mesh.csv",
                 "sh_000.csv",
@@ -40,8 +46,12 @@ public class Interactive3DModel implements IApplicationLogic {
                 "tx_000.csv",
                 "tx_ev.csv"
         );
+        var controlFaces = faceLoader.loadFromResources(new int[]{1, 2, 3});
 
-        renderables = faceLoader.loadFromResources(new int[]{1});
+        // prepare interpolation triangle
+        var selectionArea = new SelectionArea();
+        selectionArea.addControlFaces(controlFaces);
+        renderables.add(selectionArea);
     }
 
     @Override

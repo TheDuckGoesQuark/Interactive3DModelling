@@ -1,8 +1,10 @@
 package stacs.graphics.render;
 
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import stacs.graphics.data.ResourceLoader;
-import stacs.graphics.shader.ShaderProgram;
+
+import java.util.List;
 
 public class Renderer {
 
@@ -46,7 +48,7 @@ public class Renderer {
         shaderProgram.createUniform(MODEL_VIEW_MATRIX_NAME);
     }
 
-    public void render(Renderable[] renderables, Window window, Camera camera) {
+    public void render(List<Renderable> renderables, Window window, Camera camera) {
         clear();
 
         if (window.isResized()) {
@@ -62,13 +64,24 @@ public class Renderer {
 
         var viewMatrix = transformation.getViewMatrix(camera);
 
-        // draw the vertices
         for (Renderable renderable : renderables) {
+            // create root modelviewmatrix
             var modelViewMatrix = transformation.getModelViewMatrix(renderable, viewMatrix);
-            shaderProgram.setUniform(MODEL_VIEW_MATRIX_NAME, modelViewMatrix);
-            renderable.getMesh().render();
+            renderRecursively(renderable, viewMatrix, modelViewMatrix);
         }
 
         shaderProgram.unbind();
+    }
+
+    private void renderRecursively(Renderable renderable, Matrix4f viewMatrix, Matrix4f modelViewMatrix) {
+        // draw the parent
+        shaderProgram.setUniform(MODEL_VIEW_MATRIX_NAME, modelViewMatrix);
+        renderable.getMesh().render();
+
+        // draw its children
+        for(Renderable child : renderable.getChildren()) {
+            var childModelViewMatrix = transformation.getModelViewMatrix(child, viewMatrix);
+            renderRecursively(child, viewMatrix, childModelViewMatrix);
+        }
     }
 }

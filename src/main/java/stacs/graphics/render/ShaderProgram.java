@@ -1,4 +1,4 @@
-package stacs.graphics.shader;
+package stacs.graphics.render;
 
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
@@ -9,9 +9,6 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL20.*;
 
-/**
- * https://lwjglgamedev.gitbooks.io/3d-game-development-with-lwjgl/content/chapter04/chapter4.html
- */
 public class ShaderProgram {
 
     private final Map<String, Integer> uniforms;

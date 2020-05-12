@@ -7,7 +7,7 @@ public class App {
 
     public void run() {
         var applicationLogic = new Interactive3DModel();
-        var engine = new ApplicationEngine("Interactive 3D Modelling", 800, 1000, true, applicationLogic);
+        var engine = new ApplicationEngine("Interactive 3D Modelling", 1700, 800, true, applicationLogic);
         engine.run();
     }
 
