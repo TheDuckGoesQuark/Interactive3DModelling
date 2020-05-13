@@ -1,17 +1,19 @@
 package stacs.graphics.render;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-
 public class Mesh {
 
     private int vao;
     private int vertices;
+    private final int coordinateVBO;
+    private final int colourVBO;
+    private final int indicesVBO;
 
-    public Mesh(int vao, int vertex) {
+    public Mesh(int vao, int vertex, int coordinateVBO, int colourVBO, int indicesVBO) {
         this.vao = vao;
         this.vertices = vertex;
+        this.coordinateVBO = coordinateVBO;
+        this.colourVBO = colourVBO;
+        this.indicesVBO = indicesVBO;
     }
 
     public int getVaoID() {
@@ -22,18 +24,15 @@ public class Mesh {
         return vertices;
     }
 
-    public void render() {
-        // bind to the VAO
-        GL30.glBindVertexArray(this.getVaoID());
-        GL20.glEnableVertexAttribArray(Attribute.COORDINATES.getIndex());
-        GL20.glEnableVertexAttribArray(Attribute.COLOUR.getIndex());
+    public int getCoordinateVBO() {
+        return coordinateVBO;
+    }
 
-        // draw
-        GL11.glDrawElements(GL11.GL_TRIANGLES, this.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
+    public int getColourVBO() {
+        return colourVBO;
+    }
 
-        // restore state
-        GL20.glDisableVertexAttribArray(Attribute.COORDINATES.getIndex());
-        GL20.glDisableVertexAttribArray(Attribute.COLOUR.getIndex());
-        GL30.glBindVertexArray(0);
+    public int getIndicesVBO() {
+        return indicesVBO;
     }
 }

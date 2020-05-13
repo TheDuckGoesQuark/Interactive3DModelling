@@ -1,6 +1,5 @@
 package stacs.graphics.render;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -9,18 +8,26 @@ import java.util.Optional;
 
 public abstract class Renderable {
 
+    private final float[] vertices;
+    private final float[] colours;
+    private final int[] indices;
+
     private final List<Renderable> children;
     private final Mesh mesh;
     private final Vector3f position;
     private final Vector3f rotation;
     private float scale;
 
-    public Renderable(Mesh mesh) {
+    public Renderable(float[] vertices, float[] colours, int[] indices) {
         this.children = new ArrayList<>();
-        this.mesh = mesh;
         this.position = new Vector3f(0, 0, 0);
         this.scale = 1;
         this.rotation = new Vector3f(0, 0, 0);
+
+        this.vertices = vertices;
+        this.colours = colours;
+        this.indices = indices;
+        this.mesh = MeshLoader.createMesh(vertices, colours, indices);
     }
 
     public Vector3f getPosition() {
@@ -65,5 +72,21 @@ public abstract class Renderable {
 
     public void removeChild(Renderable renderable) {
         children.remove(renderable);
+    }
+
+    public void reloadIndices() {
+        getMesh().ifPresent(m -> MeshLoader.updateIndices(m, indices));
+    }
+
+    public float[] getVertices() {
+        return vertices;
+    }
+
+    public float[] getColours() {
+        return colours;
+    }
+
+    public int[] getIndices() {
+        return indices;
     }
 }

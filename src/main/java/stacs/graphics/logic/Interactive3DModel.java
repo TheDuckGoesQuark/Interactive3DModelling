@@ -7,28 +7,31 @@ import stacs.graphics.engine.IApplicationLogic;
 import stacs.graphics.engine.MouseInput;
 import stacs.graphics.render.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class Interactive3DModel implements IApplicationLogic {
 
     private static final float CAMERA_POS_STEP = 0.05f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
     private final Vector3f cameraInc;
-    private final Renderer renderer;
     private final Camera camera;
     private final SceneRoot sceneRoot;
+    private Renderer renderer;
 
-
-    public Interactive3DModel() {
-        this.renderer = new Renderer(
-                "shaders/fragment.shader",
-                "shaders/vertex.shader"
-        );
+    public Interactive3DModel(Configuration configuration) {
+        setRenderer(configuration);
         this.camera = new Camera();
         this.cameraInc = new Vector3f();
         this.sceneRoot = new SceneRoot();
+    }
+
+    private void setRenderer(Configuration configuration) {
+        if (configuration.getDepthTestMethod().equals(Configuration.DEPTH_TEST_ZBUFFER)) {
+            this.renderer = new ZBufferRenderer(
+                    "shaders/fragment.shader",
+                    "shaders/vertex.shader"
+            );
+        } else {
+            this.renderer = new PainterRenderer();
+        }
     }
 
     @Override

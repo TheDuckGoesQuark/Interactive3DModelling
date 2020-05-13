@@ -1,7 +1,6 @@
 package stacs.graphics.logic;
 
 import stacs.graphics.data.Face;
-import stacs.graphics.render.MeshLoader;
 import stacs.graphics.render.Renderable;
 
 public class SelectionArea extends Renderable {
@@ -23,11 +22,7 @@ public class SelectionArea extends Renderable {
     };
 
     public SelectionArea() {
-        super(MeshLoader.createMesh(
-                POSITIONS,
-                COLOURS,
-                INDICES
-        ));
+        super(POSITIONS, COLOURS, INDICES);
         this.setScale(1);
         this.setPosition(-1f, 0, 0);
     }

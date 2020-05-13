@@ -30,7 +30,7 @@ public class MeshLoader {
         return buffer;
     }
 
-    private static void storeData(Attribute attribute, int dimensions, float[] data) {
+    private static int storeData(Attribute attribute, int dimensions, float[] data) {
         int vbo = GL15.glGenBuffers(); //Creates a VBO ID
         VBOS.add(vbo);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo); //Loads the current VBO to store the data
@@ -38,14 +38,16 @@ public class MeshLoader {
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
         GL20.glVertexAttribPointer(attribute.getIndex(), dimensions, GL11.GL_FLOAT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0); //Unloads the current VBO when done.
+        return vbo;
     }
 
-    private static void bindIndices(int[] data) {
+    private static int bindIndices(int[] data) {
         int vbo = GL15.glGenBuffers();
         VBOS.add(vbo);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vbo);
         IntBuffer buffer = createIntBuffer(data);
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+        return vbo;
     }
 
     private static int genVAO() {
@@ -57,10 +59,26 @@ public class MeshLoader {
 
     public static Mesh createMesh(float[] positions, float[] colours, int[] indices) {
         int vao = genVAO();
-        storeData(Attribute.COORDINATES, 3, positions);
-        storeData(Attribute.COLOUR, 3, colours);
-        bindIndices(indices);
+        int coordinateVBO = storeData(Attribute.COORDINATES, 3, positions);
+        int colourVBO = storeData(Attribute.COLOUR, 3, colours);
+        int indicesVBO = bindIndices(indices);
         GL30.glBindVertexArray(0);
-        return new Mesh(vao, indices.length);
+        return new Mesh(vao, indices.length, coordinateVBO, colourVBO, indicesVBO);
+    }
+
+    public static void updateIndices(Mesh mesh, int[] newIndices) {
+        // bind vao to operate on it
+        GL30.glBindVertexArray(mesh.getVaoID());
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mesh.getIndicesVBO());
+
+        // create buffer for update indices
+        var intBuffer = createIntBuffer(newIndices);
+
+        // update contents of buffer
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, intBuffer, GL15.GL_STATIC_DRAW);
+
+        // restore state
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL30.glBindVertexArray(0);
     }
 }

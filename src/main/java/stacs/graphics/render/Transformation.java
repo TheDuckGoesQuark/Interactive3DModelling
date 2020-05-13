@@ -15,9 +15,16 @@ public class Transformation {
         this.viewMatrix = new Matrix4f();
     }
 
-    public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
-        return projectionMatrix.setPerspective(fov, width / height, zNear, zFar);
+    public final Matrix4f getPerspectiveProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
+        return projectionMatrix
+                .setPerspective(fov, width / height, zNear, zFar);
     }
+
+//    public final Matrix4f getOrthographicProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
+//        return projectionMatrix
+//                .identity()
+//                .setOrtho(0.0f, width, height, 5.0f, zNear, zFar);
+//    }
 
     public Matrix4f getViewMatrix(Camera camera) {
         var cameraPos = camera.getPosition();
