@@ -4,7 +4,7 @@
     <groupId>stacs.graphics</groupId>
     <artifactId>FaceModelling</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>FaceModelling</name>
     <url>http://maven.apache.org</url>
 
@@ -396,5 +396,6 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>${name}</finalName>
     </build>
 </project>

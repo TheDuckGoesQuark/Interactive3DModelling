@@ -66,23 +66,4 @@ public abstract class Renderable {
     public void removeChild(Renderable renderable) {
         children.remove(renderable);
     }
-
-    public void render(Matrix4f parentModelViewMatrix, ShaderProgram shaderProgram, Transformation transformation) {
-        final Matrix4f worldMatrix;
-        if (parentModelViewMatrix == null) {
-            // this node is root
-            worldMatrix = transformation.getWorldMatrix(this);
-        } else {
-            // translate child relative to parent
-            worldMatrix = new Matrix4f(parentModelViewMatrix).mul(transformation.getWorldMatrix(this));
-        }
-
-        shaderProgram.setUniform(Renderer.WORLD_MATRIX_NAME, worldMatrix);
-        this.getMesh().ifPresent(Mesh::render);
-
-        for (Renderable child : getChildren()) {
-            // render children
-            child.render(worldMatrix, shaderProgram, transformation);
-        }
-    }
 }

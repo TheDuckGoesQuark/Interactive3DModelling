@@ -77,8 +77,6 @@ public class Window {
 
         // set clear colour
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        // fixes order triangles are drawn in
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 
     public void update() {

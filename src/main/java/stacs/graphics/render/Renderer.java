@@ -1,7 +1,11 @@
 package stacs.graphics.render;
 
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import stacs.graphics.data.ResourceLoader;
+
+import java.util.ArrayList;
+import java.util.Stack;
 
 public class Renderer {
 
@@ -64,8 +68,28 @@ public class Renderer {
         var viewMatrix = transformation.getViewMatrix(camera);
         shaderProgram.setUniform(VIEW_MATRIX_NAME, viewMatrix);
 
-        sceneRoot.render(null, shaderProgram, transformation);
+        render(sceneRoot, null);
 
         shaderProgram.unbind();
+    }
+
+    private void render(Renderable renderable, Matrix4f parentWorldMatrix) {
+        final Matrix4f worldMatrix;
+        if (parentWorldMatrix == null) {
+            // this node is root
+            worldMatrix = transformation.getWorldMatrix(renderable);
+        } else {
+            // translate child relative to parent
+            worldMatrix = new Matrix4f(parentWorldMatrix)
+                    .mul(transformation.getWorldMatrix(renderable));
+        }
+
+        shaderProgram.setUniform(Renderer.WORLD_MATRIX_NAME, worldMatrix);
+        renderable.getMesh().ifPresent(Mesh::render);
+
+        for (Renderable child : renderable.getChildren()) {
+            // render children
+            render(child, worldMatrix);
+        }
     }
 }

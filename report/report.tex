@@ -98,7 +98,7 @@ frequently used for the rendering of 3D objects, and to get hands-on experience 
 \pagenumbering{arabic}
 \setcounter{page}{1} 
 
-\section{Initial Set-up}
+\section{Running the Program}
 
 The project uses \texttt{maven} for lifecycle and dependency management.
 \texttt{LWJGL} was used for this project, which provides a way to use \texttt{OpenGL} from Java. 
@@ -108,7 +108,7 @@ OpenGL \textit{may} be a cause of compatibility issues when running, but an earl
 \begin{table}[!ht]
 \centering
 \begin{tabular}{ll}
-\multicolumn{2}{l}{usage: java -jar $\langle$FaceModelling$\rangle$-with-dependencies.jar}
+    \multicolumn{2}{l}{Usage: \texttt{java -jar FaceModelling-jar-with-dependencies.jar}}
 \\ 
 
  -d,--drop           &  Include if this node should trigger a database refresh. \\
@@ -124,37 +124,9 @@ OpenGL \textit{may} be a cause of compatibility issues when running, but an earl
 %	\label{fig:chang}
 %\end{figure}
 
-\section{Receive/Send Posts}
+\section{Implementation}
 
-\subsection{Server}
-
-\begin{table}[!h]
-\centering
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}lll@{}}
-\toprule
-Message Type                               & Usage                                                                                                                        & Payload                  \\ \midrule
-\multicolumn{1}{l|}{LOGIN}                  & \multicolumn{1}{l|}{Sent by client to declare a username to the node.}                                              & Username \\
-\multicolumn{1}{l|}{JOIN\_GROUP}             & \multicolumn{1}{l|}{Sent by client to subscribe to a group.}                                     & Name of group to join.\\
-\multicolumn{1}{l|}{LEAVE\_GROUP}    & \multicolumn{1}{l|}{Sent by client to unsubscribe from a group.} & Name of group to leave.\\
-\multicolumn{1}{l|}{CHAT\_MESSAGE}                 & \multicolumn{1}{l|}{Text sent between clients.}                                                                        & To, From, Time, Contents \\
-\multicolumn{1}{l|}{ERROR}            & \multicolumn{1}{l|}{Sent by server if an error occurs}                   & Explanation \\ \bottomrule
-\end{tabular}%
-}
-\caption{Messages sent between client and server.}
-\label{tbl:clientmessagetypes}
-\end{table}
-
-\section{Testing}
-
-\section{Summary}
-
-Functionalities implemented:
-\begin{enumerate}
-	\item Dynamic ring formation
-\end{enumerate}
-
-\section{How to Run}
+% ENABLE_DEPTH_TEST solves same problem as painters algorithm, but uses z-buffers
 
 \printbibliography
 
