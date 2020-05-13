@@ -13,14 +13,13 @@ public class Interactive3DModel implements IApplicationLogic {
     private static final float MOUSE_SENSITIVITY = 0.2f;
     private final Vector3f cameraInc;
     private final Camera camera;
-    private final SceneRoot sceneRoot;
+    private SceneRoot sceneRoot;
     private Renderer renderer;
 
     public Interactive3DModel(Configuration configuration) {
         setRenderer(configuration);
         this.camera = new Camera();
         this.cameraInc = new Vector3f();
-        this.sceneRoot = new SceneRoot();
     }
 
     private void setRenderer(Configuration configuration) {
@@ -36,6 +35,7 @@ public class Interactive3DModel implements IApplicationLogic {
 
     @Override
     public void init() throws Exception {
+        sceneRoot = new SceneRoot();
         renderer.init();
 
         // load control faces

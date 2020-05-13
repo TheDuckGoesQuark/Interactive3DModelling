@@ -1,9 +1,9 @@
 package stacs.graphics.render;
 
 
-public class SceneRoot extends Renderable{
+public class SceneRoot extends Renderable {
 
     public SceneRoot() {
-        super(null);
+        super(new float[0], new float[0], new int[0]);
     }
 }

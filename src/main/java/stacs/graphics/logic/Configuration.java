@@ -15,7 +15,10 @@ public class Configuration {
 
     public Configuration(String[] args) {
         var options = new Options();
-        var depthTestMethodOption = new Option("d", DEPTH_TEST_OPTION, true, "Depth test method. Choose from: " + Arrays.toString(DEPTH_TEST_OPTIONS));
+        var depthTestMethodOption = new Option("d", DEPTH_TEST_OPTION, true,
+                "Depth test method. " +
+                        "Default: " + depthTestMethod +
+                        "Choose from: " + Arrays.toString(DEPTH_TEST_OPTIONS));
         options.addOption(depthTestMethodOption);
 
         var cliParser = new DefaultParser();
@@ -23,7 +26,7 @@ public class Configuration {
 
         try {
             cmd = cliParser.parse(options, args);
-            depthTestMethod = cmd.getOptionValue(DEPTH_TEST_OPTION);
+            depthTestMethod = cmd.getOptionValue(DEPTH_TEST_OPTION, depthTestMethod);
         } catch (ParseException e) {
             handleParseException(args[0], e, options);
         }
