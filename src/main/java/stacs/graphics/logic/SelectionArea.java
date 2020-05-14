@@ -9,24 +9,17 @@ public class SelectionArea extends Renderable {
             0.0f, 0.5f, 0.0f,
             -0.5f, -0.5f, 0.0f,
             0.5f, -0.5f, 0.0f,
-            0.0f, 0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-            0.5f, -0.5f, -0.5f,
     };
 
     private static final float[] COLOURS = {
             0.5f, 0.0f, 0.0f,
             0.0f, 0.5f, 0.0f,
             0.0f, 0.0f, 0.5f,
-            0.0f, 0.0f, 0.5f,
-            0.5f, 0.0f, 0.0f,
-            0.0f, 0.5f, 0.0f,
     };
 
-    // TODO use this to test
 
     private static final int[] INDICES = {
-            0, 1, 2, 3, 4, 5
+            0, 1, 2
     };
 
     public SelectionArea() {
@@ -51,7 +44,7 @@ public class SelectionArea extends Renderable {
 
         for (Face controlFace : controlFaces) {
             controlFace.setScale(0.0000025f);
-//            addChild(controlFace);
+            addChild(controlFace);
         }
     }
 }
