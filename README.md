@@ -1,7 +1,20 @@
-# Notes
+# TODO 
+* [X] Render face
+* [X] Render control faces
+* [ ] Click triangle for weighting
+* [ ] Click triangle for weighting
+* [ ] Create interpolated face
+* [ ] Flat shading
+* [ ] Gouraud shading
+* [ ] Orthographic projection
+* [X] Perspective projection
+* [ ] Adjustible focal length
+* [ ] Comparison of shading and projection
+* [ ] light attention model in lectures
+* [ ] adjustable free parameters
+* [ ] Phongs specularity term in reflectance model
 
-mesh.csv: 
-<index of first vertic in sh_XXX>, <index of second vertic in sh_XXX>, <index of thirdvertic in sh_XXX>
-
-sh_xxx:
-<x, y, z>
+# Extensions
+* [X] Free camera movement
+* [X] Use of OpenGL
+* [X] Scene graph
