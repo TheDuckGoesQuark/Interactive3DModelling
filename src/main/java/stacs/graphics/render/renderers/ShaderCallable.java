@@ -19,7 +19,6 @@ public class ShaderCallable implements Callable<Void> {
         this.end = end;
         this.matrix = matrix;
         this.current = new Vector4f();
-        this.current.w = 1;
     }
 
     @Override
@@ -29,6 +28,7 @@ public class ShaderCallable implements Callable<Void> {
             current.x = values[i];
             current.y = values[i + 1];
             current.z = values[i + 2];
+            current.w = 1;
 
             // apply
             matrix.transform(current);

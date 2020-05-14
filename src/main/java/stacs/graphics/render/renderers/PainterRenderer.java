@@ -18,7 +18,7 @@ public class PainterRenderer extends Renderer {
     private static final String fragmentShaderResourceName = "shaders/fragment.shader";
     private static final String vertexShaderResourceName = "shaders/vertexSimple.shader";
     private static final String MATRIX_NAME = "transformMatrix";
-    private static final int MAX_THREADS = 4;
+    private static final int MAX_THREADS = 1;
 
     @Override
     public void cleanup() {
@@ -104,8 +104,10 @@ public class PainterRenderer extends Renderer {
         if (maxZs.length <= 1 || to - from <= 0) {
             return maxZs;
         }
+
         // Sets pivot value to rightmost value in list
         var pivot = maxZs[to];
+
         // Compares values on either side of pivot until one is greater than pivot value
         int i = from;
         int j = to;
@@ -149,27 +151,10 @@ public class PainterRenderer extends Renderer {
     private float[] transformVertices(Renderable m, Matrix4f transform) {
         // prepare pipeline
         var original = m.getVertices();
-        var output = Arrays.copyOf(original, original.length);
-        var callables = new ArrayList<ShaderCallable>(MAX_THREADS);
-        var increments = output.length / MAX_THREADS;
+        var verticesCopy = Arrays.copyOf(original, original.length);
 
-        // allocate section of float array to each thread
-        var start = 0;
-        var end = 0;
-        for (int i = 0; i < MAX_THREADS; i++) {
-            start = end;
-            end = start + increments;
-            if (end > output.length) {
-                end = output.length;
-            }
-            // ensure end allows for multiple of 3 i.e. coordinates arent split between jobs
-            var length = end - start;
-            var remainder = length % 3;
-            if (length % 3 != 0) {
-                end += remainder;
-            }
-            callables.add(new ShaderCallable(output, start, end, transform));
-        }
+        // allocate chunks of the array
+        var callables = Allocator.allocate(verticesCopy, transform, MAX_THREADS);
 
         // carry out transforms
         try {
@@ -179,6 +164,6 @@ public class PainterRenderer extends Renderer {
             e.printStackTrace();
         }
 
-        return output;
+        return verticesCopy;
     }
 }
