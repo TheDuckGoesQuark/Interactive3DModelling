@@ -7,7 +7,6 @@ import stacs.graphics.render.Renderable;
 import stacs.graphics.render.ShaderProgram;
 import stacs.graphics.render.Window;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,7 +17,7 @@ public class PainterRenderer extends Renderer {
     private static final String fragmentShaderResourceName = "shaders/fragment.shader";
     private static final String vertexShaderResourceName = "shaders/vertexSimple.shader";
     private static final String MATRIX_NAME = "transformMatrix";
-    private static final int MAX_THREADS = 1;
+    private static final int MAX_THREADS = 4;
 
     @Override
     public void cleanup() {
@@ -87,66 +86,14 @@ public class PainterRenderer extends Renderer {
         m.getMesh().ifPresent(this::drawMesh);
     }
 
-    private void sortIndicesByPainter(int[] indices, float[] output) {
+    private void sortIndicesByPainter(int[] indices, float[] coordinates) {
         // get max Z for each triangle
-        float[] maxZ = new float[(indices.length / 3)];
-        for (int i = 0; i < indices.length; i += 3) {
-            var max = Math.max(output[indices[i] + 2], output[indices[i + 1] + 2]);
-            max = Math.max(output[indices[i + 2] + 2], max);
-            maxZ[i / 3] = max;
-        }
+        float[] maxZ = Util.getMaxZs(indices, coordinates);
 
         // sort indices based on the values in maxZ
-        quicksort(maxZ, 0, maxZ.length - 1, indices);
+        Util.quicksortByZValue(maxZ, 0, maxZ.length - 1, indices);
     }
 
-    private static float[] quicksort(float[] maxZs, int from, int to, int[] indices) {
-        if (maxZs.length <= 1 || to - from <= 0) {
-            return maxZs;
-        }
-
-        // Sets pivot value to rightmost value in list
-        var pivot = maxZs[to];
-
-        // Compares values on either side of pivot until one is greater than pivot value
-        int i = from;
-        int j = to;
-        while (i <= j) {
-            while (pivot > maxZs[i]) {
-                i++;
-            }
-            while (pivot < maxZs[j]) {
-                j--;
-            }
-            if (i <= j) {
-                // swap z values
-                var temp = maxZs[i];
-                maxZs[i] = maxZs[j];
-                maxZs[j] = temp;
-
-                // swap indices
-                var tempA = indices[i];
-                var tempB = indices[i + 1];
-                var tempC = indices[i + 2];
-                indices[i] = indices[j];
-                indices[i + 1] = indices[j + 1];
-                indices[i + 2] = indices[j + 2];
-                indices[j] = tempA;
-                indices[j + 1] = tempB;
-                indices[j + 2] = tempC;
-
-                i++;
-                j--;
-            }
-        }
-        if (from < j) {
-            maxZs = quicksort(maxZs, from, j, indices);
-        }
-        if (i < to) {
-            maxZs = quicksort(maxZs, i, to, indices);
-        }
-        return maxZs;
-    }
 
     private float[] transformVertices(Renderable m, Matrix4f transform) {
         // prepare pipeline
