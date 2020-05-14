@@ -21,6 +21,12 @@ public class PainterRenderer extends Renderer {
     private static final int MAX_THREADS = 4;
 
     @Override
+    public void cleanup() {
+        super.cleanup();
+        threadPoolExecutor.shutdown();
+    }
+
+    @Override
     public void init() throws Exception {
         // set up shaders
         var resourceLoader = ResourceLoader.getInstance();
@@ -59,7 +65,7 @@ public class PainterRenderer extends Renderer {
         }
 
         // build matrix
-        var transform = new Matrix4f();
+        final var transform = new Matrix4f();
         projectionMatrix.mul(viewMatrix, transform);
         transform.mul(worldMatrix);
 
@@ -84,10 +90,10 @@ public class PainterRenderer extends Renderer {
     private void sortIndicesByPainter(int[] indices, float[] output) {
         // get max Z for each triangle
         float[] maxZ = new float[(indices.length / 3)];
-        for (int i = 0; i < maxZ.length; i++) {
-            var max = Math.max(output[indices[i]], output[indices[i + 1]]);
-            max = Math.max(output[indices[i + 2]], max);
-            maxZ[i] = max;
+        for (int i = 0; i < indices.length; i += 3) {
+            var max = Math.max(output[indices[i] + 2], output[indices[i + 1] + 2]);
+            max = Math.max(output[indices[i + 2] + 2], max);
+            maxZ[i / 3] = max;
         }
 
         // sort indices based on the values in maxZ
