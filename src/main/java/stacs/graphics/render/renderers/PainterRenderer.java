@@ -1,8 +1,10 @@
 package stacs.graphics.render.renderers;
 
 import org.joml.Matrix4f;
+import stacs.graphics.data.ResourceLoader;
 import stacs.graphics.render.Camera;
 import stacs.graphics.render.Renderable;
+import stacs.graphics.render.ShaderProgram;
 import stacs.graphics.render.Window;
 
 import java.util.ArrayList;
@@ -13,7 +15,24 @@ import java.util.concurrent.Executors;
 public class PainterRenderer extends Renderer {
 
     private static final int MAX_THREADS = 4;
+    private static final String MATRIX_NAME = "transformMatrix";
     private final ExecutorService threadPoolExecutor = Executors.newFixedThreadPool(MAX_THREADS);
+    private final String fragmentShaderResourceName = "shaders/fragment.shader";
+    private final String vertexShaderResourceName = "shaders/vertexSimple.shader";
+
+    @Override
+    public void init() throws Exception {
+        // set up shaders
+        var resourceLoader = ResourceLoader.getInstance();
+        var fragmentShader = resourceLoader.readAllToString(fragmentShaderResourceName);
+        var vertexShader = resourceLoader.readAllToString(vertexShaderResourceName);
+        shaderProgram = new ShaderProgram();
+        shaderProgram.createFragmentShader(fragmentShader);
+        shaderProgram.createVertexShader(vertexShader);
+        shaderProgram.link();
+
+        shaderProgram.createUniform(MATRIX_NAME);
+    }
 
     @Override
     public void render(Renderable sceneRoot, Window window, Camera camera) {
@@ -23,7 +42,9 @@ public class PainterRenderer extends Renderer {
         var projectionMatrix = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         var viewMatrix = transformation.getViewMatrix(camera);
 
+        shaderProgram.bind();
         render(sceneRoot, null, projectionMatrix, viewMatrix);
+        shaderProgram.unbind();
     }
 
     private void render(Renderable renderable, Matrix4f parentWorldMatrix, Matrix4f projectionMatrix, Matrix4f viewMatrix) {
@@ -37,8 +58,14 @@ public class PainterRenderer extends Renderer {
                     .mul(transformation.getWorldMatrix(renderable));
         }
 
+        // build matrix
+        var transform = new Matrix4f();
+        projectionMatrix.mul(viewMatrix, transform);
+        transform.mul(worldMatrix);
+
         // apply painters algorithm to mesh
-        renderWithPainter(renderable, worldMatrix, projectionMatrix, viewMatrix);
+        shaderProgram.setUniform(MATRIX_NAME, transform);
+        renderWithPainter(renderable, transform);
 
         for (Renderable child : renderable.getChildren()) {
             // render children
@@ -46,8 +73,8 @@ public class PainterRenderer extends Renderer {
         }
     }
 
-    private void renderWithPainter(Renderable m, Matrix4f worldMatrix, Matrix4f projectionMatrix, Matrix4f viewMatrix) {
-        float[] output = transformVertices(m, worldMatrix, projectionMatrix, viewMatrix);
+    private void renderWithPainter(Renderable m, Matrix4f transformMatrix) {
+        float[] output = transformVertices(m, transformMatrix);
         int[] indices = m.getIndices();
         sortIndicesByPainter(indices, output);
         m.reloadIndices();
@@ -113,15 +140,10 @@ public class PainterRenderer extends Renderer {
         return maxZs;
     }
 
-    private float[] transformVertices(Renderable m, Matrix4f worldMatrix, Matrix4f projectionMatrix, Matrix4f viewMatrix) {
+    private float[] transformVertices(Renderable m, Matrix4f transform) {
         // prepare pipeline
         var original = m.getVertices();
         var output = Arrays.copyOf(original, original.length);
-        // combine matrices
-        var transform = worldMatrix
-                .mul(projectionMatrix)
-                .mul(viewMatrix)
-                .mul(worldMatrix);
         var callables = new ArrayList<ShaderCallable>(MAX_THREADS);
         var increments = output.length / MAX_THREADS;
 
@@ -145,7 +167,7 @@ public class PainterRenderer extends Renderer {
 
         // carry out transforms
         try {
-            var futures = threadPoolExecutor.invokeAll(callables);
+            threadPoolExecutor.invokeAll(callables);
         } catch (InterruptedException e) {
             System.err.println("Failed to execute tasks");
             e.printStackTrace();

@@ -27,10 +27,7 @@ public class Interactive3DModel implements IApplicationLogic {
 
     private void setRenderer(Configuration configuration) {
         if (configuration.getDepthTestMethod().equals(Configuration.DEPTH_TEST_ZBUFFER)) {
-            this.renderer = new ZBufferRenderer(
-                    "shaders/fragment.shader",
-                    "shaders/vertex.shader"
-            );
+            this.renderer = new ZBufferRenderer();
         } else {
             this.renderer = new PainterRenderer();
         }

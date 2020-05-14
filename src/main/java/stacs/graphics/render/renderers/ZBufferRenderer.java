@@ -7,21 +7,11 @@ import stacs.graphics.render.*;
 
 public class ZBufferRenderer extends Renderer {
 
-    private final String fragmentShaderResourceName;
-    private final String vertexShaderResourceName;
-    private ShaderProgram shaderProgram;
-
-    public ZBufferRenderer(String fragmentShaderResourceName, String vertexShaderResourceName) {
-        this.fragmentShaderResourceName = fragmentShaderResourceName;
-        this.vertexShaderResourceName = vertexShaderResourceName;
-    }
-
-    @Override
-    public void cleanup() {
-        if (shaderProgram != null) {
-            shaderProgram.cleanup();
-        }
-    }
+    private static final String WORLD_MATRIX_NAME = "worldMatrix";
+    private static final String PROJECTION_MATRIX_UNIFORM_NAME = "projectionMatrix";
+    private static final String VIEW_MATRIX_NAME = "viewMatrix";
+    private final String fragmentShaderResourceName = "shaders/fragment.shader";
+    private final String vertexShaderResourceName = "shaders/vertex.shader";
 
     @Override
     public void init() throws Exception {

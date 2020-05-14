@@ -3,27 +3,27 @@ package stacs.graphics.render.renderers;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import stacs.graphics.data.ResourceLoader;
 import stacs.graphics.render.*;
 
 public abstract class Renderer {
     protected final Transformation transformation;
-    protected static final String WORLD_MATRIX_NAME = "worldMatrix";
-    protected static final String PROJECTION_MATRIX_UNIFORM_NAME = "projectionMatrix";
-    protected static final String VIEW_MATRIX_NAME = "viewMatrix";
     protected static final float FOV = (float) Math.toRadians(60.0f);
     protected static final float Z_NEAR = 0.01f;
     protected static final float Z_FAR = 100.f;
+    protected ShaderProgram shaderProgram;
 
     public Renderer() {
         this.transformation = new Transformation();
     }
 
     public void cleanup() {
-
+        if (shaderProgram != null) {
+            shaderProgram.cleanup();
+        }
     }
 
     public void init() throws Exception {
-
     }
 
     public void clear() {
