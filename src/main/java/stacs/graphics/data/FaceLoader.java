@@ -42,6 +42,7 @@ public class FaceLoader {
         return csvResourceLoader.readToFlatList(indicesResourceName)
                 .stream()
                 .mapToInt(Integer::parseInt)
+                .map(i -> i - 1)
                 .toArray();
     }
 

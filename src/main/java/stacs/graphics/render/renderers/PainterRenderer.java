@@ -14,11 +14,11 @@ import java.util.concurrent.Executors;
 
 public class PainterRenderer extends Renderer {
 
-    private static final int MAX_THREADS = 4;
-    private static final String MATRIX_NAME = "transformMatrix";
     private final ExecutorService threadPoolExecutor = Executors.newFixedThreadPool(MAX_THREADS);
-    private final String fragmentShaderResourceName = "shaders/fragment.shader";
-    private final String vertexShaderResourceName = "shaders/vertexSimple.shader";
+    private static final String fragmentShaderResourceName = "shaders/fragment.shader";
+    private static final String vertexShaderResourceName = "shaders/vertexSimple.shader";
+    private static final String MATRIX_NAME = "transformMatrix";
+    private static final int MAX_THREADS = 4;
 
     @Override
     public void init() throws Exception {
