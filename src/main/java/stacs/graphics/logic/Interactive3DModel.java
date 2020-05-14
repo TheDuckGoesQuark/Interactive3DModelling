@@ -6,6 +6,9 @@ import stacs.graphics.data.FaceLoader;
 import stacs.graphics.engine.IApplicationLogic;
 import stacs.graphics.engine.MouseInput;
 import stacs.graphics.render.*;
+import stacs.graphics.render.renderers.PainterRenderer;
+import stacs.graphics.render.renderers.Renderer;
+import stacs.graphics.render.renderers.ZBufferRenderer;
 
 public class Interactive3DModel implements IApplicationLogic {
 

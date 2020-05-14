@@ -1,22 +1,19 @@
-package stacs.graphics.render;
+package stacs.graphics.render.renderers;
 
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 import stacs.graphics.data.ResourceLoader;
+import stacs.graphics.render.*;
 
 public class ZBufferRenderer extends Renderer {
 
     private final String fragmentShaderResourceName;
     private final String vertexShaderResourceName;
-    private final Transformation transformation;
     private ShaderProgram shaderProgram;
 
     public ZBufferRenderer(String fragmentShaderResourceName, String vertexShaderResourceName) {
         this.fragmentShaderResourceName = fragmentShaderResourceName;
         this.vertexShaderResourceName = vertexShaderResourceName;
-        this.transformation = new Transformation();
     }
 
     @Override
@@ -42,6 +39,7 @@ public class ZBufferRenderer extends Renderer {
         shaderProgram.createUniform(WORLD_MATRIX_NAME);
 
         // enable use of z-buffer for rendering triangles in correct order
+        // opengl implements this for us and is performed on the GPU
         GL11.glEnable(GL11.GL_DEPTH_TEST);
     }
 
@@ -80,7 +78,7 @@ public class ZBufferRenderer extends Renderer {
         }
 
         shaderProgram.setUniform(ZBufferRenderer.WORLD_MATRIX_NAME, worldMatrix);
-        renderable.getMesh().ifPresent(this::render);
+        renderable.getMesh().ifPresent(this::drawMesh);
 
         for (Renderable child : renderable.getChildren()) {
             // render children
@@ -88,18 +86,4 @@ public class ZBufferRenderer extends Renderer {
         }
     }
 
-    private void render(Mesh mesh) {
-        // bind to the VAO
-        GL30.glBindVertexArray(mesh.getVaoID());
-        GL20.glEnableVertexAttribArray(Attribute.COORDINATES.getIndex());
-        GL20.glEnableVertexAttribArray(Attribute.COLOUR.getIndex());
-
-        // draw
-        GL11.glDrawElements(GL11.GL_TRIANGLES, mesh.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
-
-        // restore state
-        GL20.glDisableVertexAttribArray(Attribute.COORDINATES.getIndex());
-        GL20.glDisableVertexAttribArray(Attribute.COLOUR.getIndex());
-        GL30.glBindVertexArray(0);
-    }
 }
