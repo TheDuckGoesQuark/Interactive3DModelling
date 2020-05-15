@@ -1,6 +1,7 @@
 package stacs.graphics.render;
 
 import org.joml.Vector3f;
+import org.w3c.dom.Attr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,10 @@ public abstract class Renderable {
 
     public void reloadIndices() {
         getMesh().ifPresent(m -> MeshLoader.updateIndices(m, indices));
+    }
+
+    public void reloadColours() {
+        getMesh().ifPresent(m -> MeshLoader.updateAttribute(m, colours, Attribute.COLOUR));
     }
 
     public float[] getVertices() {

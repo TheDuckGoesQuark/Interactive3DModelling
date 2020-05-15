@@ -1,9 +1,11 @@
 package stacs.graphics.render.renderers;
 
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import stacs.graphics.data.ResourceLoader;
 import stacs.graphics.render.*;
 
 public abstract class Renderer {
@@ -46,4 +48,6 @@ public abstract class Renderer {
         GL20.glDisableVertexAttribArray(Attribute.COLOUR.getIndex());
         GL30.glBindVertexArray(0);
     }
+
+    public abstract Vector2f invertScreenCoordinates(Window window, Camera camera, Vector2d position);
 }

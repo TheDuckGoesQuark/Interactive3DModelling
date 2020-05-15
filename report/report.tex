@@ -117,6 +117,13 @@ OpenGL \textit{may} be a cause of compatibility issues when running, but an earl
 
 \subsection{Loading Mesh Data}
 
+A \texttt{FaceLoader} instance initialises by parsing the indices (\texttt{mesh.csv}), and the average face coordinates (\texttt{sh\_000.csv}), vertex weighting (\texttt{sh\_ev.csv}), average face colour (\texttt{tx\_000.csv}), and colour weightings (\texttt{tx\_ev.csv}).
+The indices are converted from 1-indexed to 0-indexed when being loaded in.
+The \texttt{FaceLoader} instance then loads the deltas for both coordinates and colours for each face, calculating the actual coordinates for each vertex of each face.
+
+The arrays of face data are then passed to the \texttt{MeshLoader} which creates a vertex array object (VAO) for each face, and binds a vertex buffer object (VBO) for the vertices, indices, and colours to them.
+
+The use of indices instead of simply listing all coordinates saves on memory as the one vertex can be used in many triangles, as demonstrated in figure \ref{fig:index_mesh}.
 
 \begin{figure}[!ht]
 	\centering
@@ -125,7 +132,7 @@ OpenGL \textit{may} be a cause of compatibility issues when running, but an earl
 	\label{fig:index_mesh}
 \end{figure}
 
-\subsection{Depth Testing}
+\subsection{Depth Testing and Painters Algorithm}
 
 OpenGL does not natively implement painters algorithm for depth testing, and does not expose an API for carrying it out .
 Instead, it uses Z-buffers, 
@@ -141,7 +148,61 @@ Painters algorithm also requires additional computation in the case where object
 Methods to solve this involve splitting the intersecting shapes and rendering these instead.
 
 A separate renderer was implemented that used painters algorithm.
-This was achieved by 
+This renderer was significantly slower both due to the added computation necessary for the painters algorithm, and also due to the fact that the sorting was performed using the CPU rather than the GPU.
+
+The first step involved applying each transformation to the set of coordinates. 
+To try improve performance, this task was parallelised using a thread pool.
+Then, for each triplet of indices (i.e. each triangle), the maximum Z value was recorded.
+Next, maximum z values for each triangle were sorted lowest to highest using a custom \texttt{quicksort} implementation.
+The custom implementation was necessary so that every swap performed on the array of maximum z values would also be performed on the indices array, effectively sorting each triangle by maximum z value.
+The new indices would then be passed as a VBO for OpenGL, which renders triangles in order of appearance in the indices VBO.
+
+% TODO overlapping tests?
+
+\subsection{Selection Triangle}
+
+The selection triangle is rendered with the three control faces at each vertex.
+A left click on the triangle updates the weighting to be used when producing the interpolated face.
+This required carrying out ray casting with respect to the mouse position, and was achieved using the steps described by \cite{screenspace}.
+Mapping the left click to a position on the selection triangle involved converting from the 2D screen space coordinates to OpenGLs 3D device coordinate system (Figure \ref{fig:screen_coordinates}).
+We then apply the inverse of the projection matrix to translate the coordinates to camera coordinates.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=\linewidth]{images/screen_coordinates.png}
+    \caption{Converting from screen space to OpenGL \cite{lwjglgamedev}.}
+	\label{fig:screen_coordinates}
+\end{figure}
+
+\newpage
+\section{Summary of Implementation}
+\noindent\textbf{Requirements}
+\begin{itemize}
+    \itemsep0em
+    \item  Render faces using index, coordinate, and colour buffers
+    \item  Painters algorithm 
+    \item  Click triangle to select weighting between different faces
+    \item  Interpolate to create face from control faces with weighting
+    \item  Flat shading
+    \item  Gouraud shading
+    \item  Orthographic projection
+    \item  Perspective projection
+    \item  Adjustable focal length
+    \item  Comparison of shading and projection
+    \item  Light attention model from lectures
+    \item  Adjustable free parameters
+    \item  Phongs secularity term in reflectance model
+\end{itemize}
+
+\noindent\textbf{Extensions}
+\begin{itemize}
+\itemsep0em
+\item Camera is able to move around 3D world
+\item Comparison between painters algorithm and z-buffers 
+\item Control faces are also visible during selection
+\item Use of OpenGL for optimised rendering
+\item Scene graph to render children objects relative to parents
+\end{itemize}
 
 \printbibliography
 

@@ -2,6 +2,7 @@ package stacs.graphics.logic;
 
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
+import stacs.graphics.data.Face;
 import stacs.graphics.data.FaceLoader;
 import stacs.graphics.engine.IApplicationLogic;
 import stacs.graphics.engine.MouseInput;
@@ -10,14 +11,19 @@ import stacs.graphics.render.renderers.PainterRenderer;
 import stacs.graphics.render.renderers.Renderer;
 import stacs.graphics.render.renderers.ZBufferRenderer;
 
+import java.util.Arrays;
+
 public class Interactive3DModel implements IApplicationLogic {
 
     private static final float CAMERA_POS_STEP = 0.05f;
     private static final float MOUSE_SENSITIVITY = 0.2f;
     private final Vector3f cameraInc;
     private final Camera camera;
-    private SceneRoot sceneRoot;
     private Renderer renderer;
+    private OutputFace outputFace;
+    private SceneRoot sceneRoot;
+    private SelectionArea selectionArea;
+    private Face[] controlFaces;
 
     public Interactive3DModel(Configuration configuration) {
         setRenderer(configuration);
@@ -46,12 +52,20 @@ public class Interactive3DModel implements IApplicationLogic {
                 "tx_000.csv",
                 "tx_ev.csv"
         );
-        var controlFaces = faceLoader.loadFromResources(new int[]{1, 2, 3});
+        controlFaces = faceLoader.loadFromResources(new int[]{1, 2, 3});
+
+        // prepare output face
+        var firstFace = controlFaces[0];
+        var indices = firstFace.getIndices();
+        outputFace = new OutputFace(firstFace.getVertices().length, Arrays.copyOf(indices, indices.length));
 
         // prepare interpolation triangle
-        var selectionArea = new SelectionArea();
+        selectionArea = new SelectionArea();
         selectionArea.addControlFaces(controlFaces);
+
+        // add renderables to scene
         sceneRoot.addChild(selectionArea);
+        sceneRoot.addChild(outputFace);
     }
 
     @Override
@@ -75,7 +89,7 @@ public class Interactive3DModel implements IApplicationLogic {
     }
 
     @Override
-    public void update(float interval, MouseInput mouseInput) {
+    public void update(float interval, MouseInput mouseInput, Window window) {
         // update camera position
         camera.movePosition(
                 cameraInc.x * CAMERA_POS_STEP,
@@ -87,6 +101,15 @@ public class Interactive3DModel implements IApplicationLogic {
         if (mouseInput.isRightButtonPressed()) {
             var rotVec = mouseInput.getDisplVec();
             camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+        }
+
+        // check for selection triangle click and update weighting
+        if (mouseInput.isLeftButtonPressed()) {
+            // convert window coordinate to world coordinate
+            var position = mouseInput.getCurrentPos();
+            var triangleCoordinate = renderer.invertScreenCoordinates(window, camera, position);
+            selectionArea.setCurrentWeighting(new Vector3f(triangleCoordinate.x, triangleCoordinate.y, 0.0f));
+            selectionArea.calculateOutputFace(outputFace, controlFaces);
         }
     }
 

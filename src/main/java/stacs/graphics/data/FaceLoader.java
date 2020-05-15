@@ -39,6 +39,7 @@ public class FaceLoader {
     private static int[] loadIndicesFromResource(String indicesResourceName) throws IOException {
         var csvResourceLoader = ResourceLoader.getInstance();
 
+        // stream to flat array and convert to 0-indexed
         return csvResourceLoader.readToFlatList(indicesResourceName)
                 .stream()
                 .mapToInt(Integer::parseInt)

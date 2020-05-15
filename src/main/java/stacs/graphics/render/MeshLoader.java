@@ -81,4 +81,8 @@ public class MeshLoader {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
     }
+
+    public static void updateAttribute(Mesh mesh, float[] newValues, Attribute attribute) {
+
+    }
 }

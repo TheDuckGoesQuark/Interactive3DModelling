@@ -84,7 +84,7 @@ public class ApplicationEngine implements Runnable {
     }
 
     protected void update(float interval) {
-        applicationLogic.update(interval, mouseInput);
+        applicationLogic.update(interval, mouseInput, window);
     }
 
     protected void render() {

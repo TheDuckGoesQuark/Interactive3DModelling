@@ -1,6 +1,9 @@
 package stacs.graphics.render.renderers;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import stacs.graphics.data.ResourceLoader;
 import stacs.graphics.render.Camera;
 import stacs.graphics.render.Renderable;
@@ -50,6 +53,11 @@ public class PainterRenderer extends Renderer {
         shaderProgram.bind();
         render(sceneRoot, null, projectionMatrix, viewMatrix);
         shaderProgram.unbind();
+    }
+
+    @Override
+    public Vector2f invertScreenCoordinates(Window window, Camera camera, Vector2d position) {
+        return null;
     }
 
     private void render(Renderable renderable, Matrix4f parentWorldMatrix, Matrix4f projectionMatrix, Matrix4f viewMatrix) {

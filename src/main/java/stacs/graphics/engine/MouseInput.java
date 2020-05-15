@@ -60,6 +60,10 @@ public class MouseInput {
         previousPos.y = currentPos.y;
     }
 
+    public Vector2d getCurrentPos() {
+        return currentPos;
+    }
+
     public boolean isLeftButtonPressed() {
         return leftButtonPressed;
     }
