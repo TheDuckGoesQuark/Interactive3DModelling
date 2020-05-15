@@ -78,11 +78,31 @@ public class MeshLoader {
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, intBuffer, GL15.GL_STATIC_DRAW);
 
         // restore state
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
         GL30.glBindVertexArray(0);
     }
 
     public static void updateAttribute(Mesh mesh, float[] newValues, Attribute attribute) {
+        // bind vao to operate on it
+        GL30.glBindVertexArray(mesh.getVaoID());
 
+        switch (attribute) {
+            case COORDINATES:
+                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, mesh.getCoordinateVBO());
+                break;
+            case COLOUR:
+                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, mesh.getColourVBO());
+                break;
+        }
+
+        // create buffer for update indices
+        var floatBuffer = createFloatBuffer(newValues);
+
+        // update contents of buffer
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, floatBuffer, GL15.GL_STATIC_DRAW);
+
+        // restore state
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        GL30.glBindVertexArray(0);
     }
 }

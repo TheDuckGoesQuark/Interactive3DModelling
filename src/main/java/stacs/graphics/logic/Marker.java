@@ -27,7 +27,7 @@ public class Marker extends Renderable {
 
     public void setColour(Vector3f colour) {
         var colours = this.getColours();
-        for (int i = 0; i < colour.length(); i += 3) {
+        for (int i = 0; i < colours.length; i += 3) {
             colours[i] = colour.x;
             colours[i + 1] = colour.y;
             colours[i + 2] = colour.z;

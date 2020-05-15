@@ -165,7 +165,7 @@ The selection triangle is rendered with the three control faces at each vertex.
 A left click on the triangle updates the weighting to be used when producing the interpolated face.
 This required carrying out ray casting with respect to the mouse position, and was achieved using the steps described by \cite{screenspace}.
 Mapping the left click to a position on the selection triangle involved converting from the 2D screen space coordinates to OpenGLs 3D device coordinate system (Figure \ref{fig:screen_coordinates}).
-We then apply the inverse of the projection matrix to translate the coordinates to camera coordinates.
+We then apply the inverse of the transformation matrices we used to convert to screen space to get the coordinates in world space.
 
 \begin{figure}[!ht]
 	\centering

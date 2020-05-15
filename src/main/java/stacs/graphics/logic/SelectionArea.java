@@ -1,6 +1,5 @@
 package stacs.graphics.logic;
 
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import stacs.graphics.data.Face;
 import stacs.graphics.render.Renderable;
@@ -95,7 +94,7 @@ public class SelectionArea extends Renderable {
 
     private void updateMarker(Vector3f markerCoordinate) {
         marker.setPosition(markerCoordinate.x, markerCoordinate.y, 0.1f);
-        System.out.println(markerCoordinate);
+        System.out.println(weighting);
         marker.setColour(weighting);
     }
 
