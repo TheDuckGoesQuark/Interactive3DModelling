@@ -70,12 +70,12 @@ public class Configuration {
             shadingMethod = cmd.getOptionValue(SHADING_OPTION, shadingMethod);
             focalLength = Float.parseFloat(cmd.getOptionValue(FOCAL_LENGTH_OPTION, Float.toString(focalLength)));
             projectionMethod = ProjectionMethod.valueOf(cmd.getOptionValue(PROJECTION_OPTION, projectionMethod.name()));
-        } catch (ParseException e) {
+        } catch (Exception e) {
             handleParseException(args[0], e, options);
         }
     }
 
-    private void handleParseException(String howCalled, ParseException e, Options options) {
+    private void handleParseException(String howCalled, Exception e, Options options) {
         if (e != null) {
             System.err.println(e.getMessage());
         }

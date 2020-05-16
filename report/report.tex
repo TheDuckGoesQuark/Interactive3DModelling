@@ -113,6 +113,16 @@ OpenGL \textit{may} be a cause of compatibility issues when running, but an earl
 
 \noindent \texttt{java -jar FaceModelling-jar-with-dependencies.jar} to run the program. Pass the \texttt{-h} flag to see options.
 
+\noindent Camera control:
+\begin{itemize}
+    \item W to move into the screen
+    \item S to move out of the screen
+    \item A to move left
+    \item D to move right
+    \item Right click and drag to change orientation
+    \item Left click on selection triangle to change weightings (ray tracing not perfect, works best when facing straight on).
+\end{itemize}
+
 \section{Implementation}
 
 \subsection{Loading Mesh Data}
@@ -157,7 +167,8 @@ Next, maximum z values for each triangle were sorted lowest to highest using a c
 The custom implementation was necessary so that every swap performed on the array of maximum z values would also be performed on the indices array, effectively sorting each triangle by maximum z value.
 The new indices would then be passed as a VBO for OpenGL, which renders triangles in order of appearance in the indices VBO.
 
-% TODO overlapping tests?
+The algorithm does not account for intersecting shapes, which is especially noticeable at the nose of the faces.
+Methods for dealing with such intersections include splitting the intersection shapes and painting (or not) the subsections individually.
 
 \subsection{Selection Triangle}
 
@@ -202,7 +213,6 @@ My interpretation of the practical specification was that flat shading should in
 When accounting for lighting, the face of each triangle would have the same value which could be calculated by taking the cross product of two edges of the triangle (which two affects the direction of the normal), as shown in figure \ref{fig:tri_normal}. 
 This would require that each vertex in the mesh that is part of multiple triangles would have a normal value for each triangle it was part of, due to how OpenGL processes VAOs with indices.
 This was realised later into development, and would require heavy refactoring to correct. 
-Therefore only Gouraud shading was attempted.
 
 Gouraud shading involves calculating a normal per vertex, where this normal is weighted by each triangle that the vertex belongs to.
 This weighting can be calculated many ways.
@@ -218,6 +228,9 @@ For this practical, the steps were taken (from \cite{gouraud}):
 
 The normal for each point on the surface of each triangle is calculated by again using Barycentric coordinates.
 
+Again, the main issue with implementing the shading fully was the abstraction of OpenGL.
+Though the concepts were thoroughly understood, I was not able to implement it.
+
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.4\linewidth]{images/tri-normal.png}
@@ -225,7 +238,50 @@ The normal for each point on the surface of each triangle is calculated by again
 	\label{fig:tri_normal}
 \end{figure}
 
-\subsection{}
+\subsection{Projection}
+
+Both perspective and orthographic projection can be set.
+
+For the perspective projection matrix, the focal length can be set from command line options. 
+
+The transformations from model coordinates to view coordinates involves the multiplication of a series of different transformations:
+$$
+Transformation = [\textrm{Projection}][\textrm{View}][\textrm{World}]
+$$
+The world matrix maps the model coordinates (i.e. our face vertices) to how we want it represented in our `world'. 
+This includes transformations such as translation, scaling, and rotation.
+A scene graph was implemented so that models could be rendered relative to each other.
+This is exemplified by the control faces which are positioned relative to the selection triangle.
+This involved recursively building a world matrix for each parent.
+
+The view matrix is constructed from the current camera position. 
+The camera movement was based on the guide from \cite{lwjglgamedev}.
+
+The perspective projection matrix is calculated using the field of view (hard coded to 60), the aspect ratio (width over height), and the focal length.
+Since the camera is used, the focal length described the distance just in front of the camera (hard coded to 0.01f) to the far distance set by the user (default 5f).
+The effect of the far distance can be seen if the camera is moved backwards far enough, as the model begin to disappear.
+
+The orthographic projection matrix is calculated by specifying the leftmost coordinate (-1 in OpenGL) rightmost (the aspect ratio was used so that the image was not too stretched by non-square windows), the lowest and highest coordinate, and the near and far distances again.
+
+Since the orthographic view is effectively like having a camera infinitely far away, it behaves differently to the perspective camera.
+Zooming in or out does not affect the appearance of the models, therefore the relative sizes of objects are constant regardless of their distance from the viewer.
+The widths and heights of objects also remain constant as the user moves in any other direction.
+
+On the other hand, the perspective projection stretches objects as they are approached. 
+Zooming in effectively increases the scale of the model.
+
+\section{Conclusion}
+
+Though I was not able to implement everything, the time spent reading to understand the concepts was very beneficial.
+Development was drastically hindered by several issues.
+For example, when implementing Painters algorithm, a custom implementation of quicksort was used that would cause a stack overflow. 
+Time was lost on the assumption that this was due to a logical error, but it was in fact simply due to the large number of elements being sorted, and was corrected by increasing the stack size for the JVM (as mentioned in the usage).
+In hindsight the use of OpenGL quickly became more of a curse than a blessing.
+It was difficult to determine how much of the functionality was to be written from scratch (for example, it was assumed acceptable to use the \texttt{JOML} matrix functions such as \texttt{setPerspective()} when constructing projection matrices).
+For example, when calculating pixel colours, OpenGL uses Gauraud shading by default, and interpolates the colours using Barycentric coordinates for each fragment.
+The time spent determining if it was possible to perform these operations myself efficiently would have been better spent including a lighting model which could have been applied to each fragment with knowledge of the vertex normals (these are calculated in the \texttt{Util} class, but not used).
+
+Nevertheless, this project has greatly improved my understanding of computer graphics.
 
 \newpage
 \section{Summary of Implementation}
@@ -236,15 +292,10 @@ The normal for each point on the surface of each triangle is calculated by again
     \item  Painters algorithm 
     \item  Click triangle to select weighting between different faces
     \item  Interpolate to create face from control faces with weighting
-    \item  Flat shading
-    \item  Gouraud shading
     \item  Orthographic projection
     \item  Perspective projection
     \item  Adjustable focal length
-    \item  Comparison of shading and projection
-    \item  Light attention model from lectures
-    \item  Adjustable free parameters
-    \item  Phongs secularity term in reflectance model
+    \item  Comparison of projection methods
 \end{itemize}
 
 \noindent\textbf{Extensions}
