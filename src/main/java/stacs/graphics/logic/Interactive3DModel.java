@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import stacs.graphics.data.Face;
 import stacs.graphics.data.FaceLoader;
+import stacs.graphics.engine.DirectionalLight;
 import stacs.graphics.engine.IApplicationLogic;
 import stacs.graphics.engine.MouseInput;
 import stacs.graphics.render.*;
@@ -23,19 +24,25 @@ public class Interactive3DModel implements IApplicationLogic {
     private OutputFace outputFace;
     private SceneRoot sceneRoot;
     private SelectionArea selectionArea;
+    private DirectionalLight directionalLight;
     private Face[] controlFaces;
 
     public Interactive3DModel(Configuration configuration) {
         setRenderer(configuration);
         this.camera = new Camera();
         this.cameraInc = new Vector3f();
+        this.directionalLight = new DirectionalLight(
+                new Vector3f(1f, 1f, 1f),
+                new Vector3f(0f, 0f, -1f),
+                1
+        );
     }
 
     private void setRenderer(Configuration configuration) {
         if (configuration.getDepthTestMethod().equals(Configuration.DEPTH_TEST_ZBUFFER)) {
-            this.renderer = new ZBufferRenderer();
+            this.renderer = new ZBufferRenderer(configuration);
         } else {
-            this.renderer = new PainterRenderer();
+            this.renderer = new PainterRenderer(configuration);
         }
     }
 
@@ -119,7 +126,7 @@ public class Interactive3DModel implements IApplicationLogic {
 
     @Override
     public void render(Window window) {
-        renderer.render(sceneRoot, window, camera);
+        renderer.render(sceneRoot, window, camera, directionalLight);
     }
 
     @Override

@@ -2,7 +2,7 @@
 * [X] Render face
 * [X] Render control faces
 * [X] Click triangle for weighting
-* [ ] Create interpolated face
+* [X] Create interpolated face
 * [ ] Flat shading
 * [ ] Gouraud shading
 * [ ] Orthographic projection

@@ -192,6 +192,40 @@ If our user clicks outside the bounds of the selection triangle, a negative weig
 \subsection{Interpolated Face}
 
 For each vertex of the face, the coordinates can be calculated using the equations for Barycentric coordinates described above.
+The output face is rendered at a larger scale than the control faces, just to the right of the selection triangle.
+
+\subsection{Shading}
+
+OpenGL supports both flat and Gouraud shading methods. 
+However, the flat shading method only uses the colour from the first vertex of each triangle.
+My interpretation of the practical specification was that flat shading should involve using the average colour from each vertex to calculate the colour of every fragment on the face of the triangle.
+When accounting for lighting, the face of each triangle would have the same value which could be calculated by taking the cross product of two edges of the triangle (which two affects the direction of the normal), as shown in figure \ref{fig:tri_normal}. 
+This would require that each vertex in the mesh that is part of multiple triangles would have a normal value for each triangle it was part of, due to how OpenGL processes VAOs with indices.
+This was realised later into development, and would require heavy refactoring to correct. 
+Therefore only Gouraud shading was attempted.
+
+Gouraud shading involves calculating a normal per vertex, where this normal is weighted by each triangle that the vertex belongs to.
+This weighting can be calculated many ways.
+Often logic is included so that hard edges are not rounded.
+For this practical, the steps were taken (from \cite{gouraud}):
+
+\begin{enumerate}
+    \itemsep0em
+\item Set all vertex normals to zero
+\item For each face, calculate the face normal and add it to the vertex normal for each vertex its touching
+\item Normalize all vertex normals
+\end{enumerate}
+
+The normal for each point on the surface of each triangle is calculated by again using Barycentric coordinates.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.4\linewidth]{images/tri-normal.png}
+    \caption{Calculating face normal.}
+	\label{fig:tri_normal}
+\end{figure}
+
+\subsection{}
 
 \newpage
 \section{Summary of Implementation}

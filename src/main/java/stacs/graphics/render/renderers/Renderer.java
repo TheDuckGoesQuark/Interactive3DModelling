@@ -7,6 +7,8 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import stacs.graphics.engine.DirectionalLight;
+import stacs.graphics.logic.Configuration;
 import stacs.graphics.render.*;
 
 public abstract class Renderer {
@@ -16,7 +18,7 @@ public abstract class Renderer {
     protected static final float Z_FAR = 100.f;
     protected ShaderProgram shaderProgram;
 
-    public Renderer() {
+    public Renderer(Configuration configuration) {
         this.transformation = new Transformation();
     }
 
@@ -33,13 +35,14 @@ public abstract class Renderer {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
 
-    public abstract void render(Renderable sceneRoot, Window window, Camera camera);
+    public abstract void render(Renderable sceneRoot, Window window, Camera camera, DirectionalLight directionalLight);
 
     protected void drawMesh(Mesh mesh) {
         // bind to the VAO
         GL30.glBindVertexArray(mesh.getVaoID());
         GL20.glEnableVertexAttribArray(Attribute.COORDINATES.getIndex());
         GL20.glEnableVertexAttribArray(Attribute.COLOUR.getIndex());
+        GL20.glEnableVertexAttribArray(Attribute.NORMALS.getIndex());
 
         // draw
         GL11.glDrawElements(GL11.GL_TRIANGLES, mesh.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
@@ -47,6 +50,7 @@ public abstract class Renderer {
         // restore state
         GL20.glDisableVertexAttribArray(Attribute.COORDINATES.getIndex());
         GL20.glDisableVertexAttribArray(Attribute.COLOUR.getIndex());
+        GL20.glDisableVertexAttribArray(Attribute.NORMALS.getIndex());
         GL30.glBindVertexArray(0);
     }
 

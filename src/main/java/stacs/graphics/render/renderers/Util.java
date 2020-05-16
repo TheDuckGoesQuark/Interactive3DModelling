@@ -1,5 +1,7 @@
 package stacs.graphics.render.renderers;
 
+import org.joml.Vector3f;
+
 public class Util {
     public static float[] quicksortByZValue(float[] maxZs, int from, int to, int[] indices) {
         if (maxZs.length <= 1 || to - from <= 0) {
@@ -63,5 +65,46 @@ public class Util {
         }
 
         return maxZ;
+    }
+
+    public static float[] vertexNormals(float[] vertices, int[] indices, float[] vertexNormals) {
+        // for each face, compute normal
+        for (int i = 0; i < indices.length; i += 3) {
+            var indexA = indices[i];
+            var indexB = indices[i + 1];
+            var indexC = indices[i + 2];
+            var A = new Vector3f(vertices[indexA], vertices[indexA + 1], vertices[indexA + 2]);
+            var B = new Vector3f(vertices[indexB], vertices[indexB + 1], vertices[indexB + 2]);
+            var C = new Vector3f(vertices[indexC], vertices[indexC + 1], vertices[indexC + 2]);
+
+            var AB = B.sub(A);
+            var AC = C.sub(A);
+
+            var planeNormal = AB.cross(AC);
+
+            // accumulate normals
+            vertexNormals[indexA] += planeNormal.x;
+            vertexNormals[indexA + 1] += planeNormal.y;
+            vertexNormals[indexA + 2] += planeNormal.z;
+
+            vertexNormals[indexB] += planeNormal.x;
+            vertexNormals[indexB + 1] += planeNormal.y;
+            vertexNormals[indexB + 2] += planeNormal.z;
+
+            vertexNormals[indexC] += planeNormal.x;
+            vertexNormals[indexC + 1] += planeNormal.y;
+            vertexNormals[indexC + 2] += planeNormal.z;
+        }
+
+        // normalise
+        for (int i = 0; i < vertices.length; i += 3) {
+            var normal = new Vector3f(vertexNormals[i], vertexNormals[i + 1], vertexNormals[i + 2]);
+            normal.normalize();
+            vertexNormals[i] = normal.x;
+            vertexNormals[i + 1] = normal.y;
+            vertexNormals[i + 2] = normal.z;
+        }
+
+        return vertexNormals;
     }
 }

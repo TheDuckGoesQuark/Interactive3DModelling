@@ -57,13 +57,15 @@ public class MeshLoader {
         return vao;
     }
 
-    public static Mesh createMesh(float[] positions, float[] colours, int[] indices) {
+    public static Mesh createMesh(float[] positions, float[] colours, int[] indices, float[] normals) {
         int vao = genVAO();
         int coordinateVBO = storeData(Attribute.COORDINATES, 3, positions);
         int colourVBO = storeData(Attribute.COLOUR, 3, colours);
+        int normalsVBO = storeData(Attribute.NORMALS, 3, normals);
         int indicesVBO = bindIndices(indices);
         GL30.glBindVertexArray(0);
-        return new Mesh(vao, indices.length, coordinateVBO, colourVBO, indicesVBO);
+
+        return new Mesh(vao, indices.length, coordinateVBO, colourVBO, indicesVBO, normalsVBO);
     }
 
     public static void updateIndices(Mesh mesh, int[] newIndices) {
@@ -91,6 +93,9 @@ public class MeshLoader {
                 break;
             case COLOUR:
                 GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, mesh.getColourVBO());
+                break;
+            case NORMALS:
+                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, mesh.getNormalsVBO());
                 break;
         }
 

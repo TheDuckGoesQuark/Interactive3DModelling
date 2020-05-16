@@ -2,6 +2,8 @@ package stacs.graphics.render.renderers;
 
 import org.joml.*;
 import stacs.graphics.data.ResourceLoader;
+import stacs.graphics.engine.DirectionalLight;
+import stacs.graphics.logic.Configuration;
 import stacs.graphics.render.Camera;
 import stacs.graphics.render.Renderable;
 import stacs.graphics.render.ShaderProgram;
@@ -21,6 +23,10 @@ public class PainterRenderer extends Renderer {
     private static final String vertexShaderResourceName = "shaders/vertexSimple.shader";
     private static final String MATRIX_NAME = "transformMatrix";
     private static final int MAX_THREADS = 4;
+
+    public PainterRenderer(Configuration configuration) {
+        super(configuration);
+    }
 
     @Override
     public void cleanup() {
@@ -43,7 +49,7 @@ public class PainterRenderer extends Renderer {
     }
 
     @Override
-    public void render(Renderable sceneRoot, Window window, Camera camera) {
+    public void render(Renderable sceneRoot, Window window, Camera camera, DirectionalLight directionalLight) {
         clear();
 
         // transform values

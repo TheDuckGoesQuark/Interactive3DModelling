@@ -7,13 +7,15 @@ public class Mesh {
     private final int coordinateVBO;
     private final int colourVBO;
     private final int indicesVBO;
+    private final int normalsVBO;
 
-    public Mesh(int vao, int vertex, int coordinateVBO, int colourVBO, int indicesVBO) {
+    public Mesh(int vao, int vertex, int coordinateVBO, int colourVBO, int indicesVBO, int normalsVBO) {
         this.vao = vao;
         this.vertices = vertex;
         this.coordinateVBO = coordinateVBO;
         this.colourVBO = colourVBO;
         this.indicesVBO = indicesVBO;
+        this.normalsVBO = normalsVBO;
     }
 
     public int getVaoID() {
@@ -34,5 +36,9 @@ public class Mesh {
 
     public int getIndicesVBO() {
         return indicesVBO;
+    }
+
+    public int getNormalsVBO() {
+        return normalsVBO;
     }
 }

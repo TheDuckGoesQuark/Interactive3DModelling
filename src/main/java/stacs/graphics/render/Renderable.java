@@ -1,7 +1,7 @@
 package stacs.graphics.render;
 
 import org.joml.Vector3f;
-import org.w3c.dom.Attr;
+import stacs.graphics.render.renderers.Util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ public abstract class Renderable {
 
     private final float[] vertices;
     private final float[] colours;
+    private final float[] normals;
     private final int[] indices;
 
     private final List<Renderable> children;
@@ -28,8 +29,10 @@ public abstract class Renderable {
         this.vertices = vertices;
         this.colours = colours;
         this.indices = indices;
-        this.mesh = MeshLoader.createMesh(vertices, colours, indices);
+        this.normals = Util.vertexNormals(vertices, indices, new float[vertices.length]);
+        this.mesh = MeshLoader.createMesh(vertices, colours, indices, normals);
     }
+
 
     public Vector3f getPosition() {
         return position;
@@ -83,6 +86,14 @@ public abstract class Renderable {
         getMesh().ifPresent(m -> MeshLoader.updateAttribute(m, colours, Attribute.COLOUR));
     }
 
+    public void reloadCoordinates() {
+        getMesh().ifPresent(m -> MeshLoader.updateAttribute(m, vertices, Attribute.COORDINATES));
+    }
+
+    public void reloadNormals() {
+        getMesh().ifPresent(m -> MeshLoader.updateAttribute(m, normals, Attribute.NORMALS));
+    }
+
     public float[] getVertices() {
         return vertices;
     }
@@ -93,5 +104,9 @@ public abstract class Renderable {
 
     public int[] getIndices() {
         return indices;
+    }
+
+    public float[] getNormals() {
+        return normals;
     }
 }

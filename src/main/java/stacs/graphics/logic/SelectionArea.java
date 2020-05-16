@@ -5,6 +5,7 @@ import stacs.graphics.data.Face;
 import stacs.graphics.render.Attribute;
 import stacs.graphics.render.MeshLoader;
 import stacs.graphics.render.Renderable;
+import stacs.graphics.render.renderers.Util;
 
 public class SelectionArea extends Renderable {
 
@@ -125,9 +126,11 @@ public class SelectionArea extends Renderable {
             outputColours[z] = (weighting.x * aColours[z]) + (weighting.y * bColours[z]) + (weighting.z * cColours[z]);
         }
 
-        outputFace.getMesh().ifPresent(m -> {
-            MeshLoader.updateAttribute(m, outputVertices, Attribute.COORDINATES);
-            MeshLoader.updateAttribute(m, outputColours, Attribute.COLOUR);
-        });
+        // recalculate normals since coordinates have changed
+        Util.vertexNormals(outputVertices, outputFace.getIndices(), outputFace.getNormals());
+
+        outputFace.reloadCoordinates();
+        outputFace.reloadNormals();
+        outputFace.reloadColours();
     }
 }
