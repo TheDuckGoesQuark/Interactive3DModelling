@@ -2,10 +2,16 @@
 
 in vec3 in_position;
 in vec3 in_colour;
-in vec3 in_normal;
 
 out vec3 exColour;
 
+//struct DirectionalLight {
+//    vec3 colour;
+//    vec3 direction;
+//    float intensity;
+//};
+
+//uniform DirectionalLight directionalLight;
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
