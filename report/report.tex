@@ -165,7 +165,6 @@ The selection triangle is rendered with the three control faces at each vertex.
 A left click on the triangle updates the weighting to be used when producing the interpolated face.
 This required carrying out ray casting with respect to the mouse position, and was achieved using the steps described by \cite{screenspace}.
 Mapping the left click to a position on the selection triangle involved converting from the 2D screen space coordinates to OpenGLs 3D device coordinate system (Figure \ref{fig:screen_coordinates}).
-We then apply the inverse of the transformation matrices we used to convert to screen space to get the coordinates in world space.
 
 \begin{figure}[!ht]
 	\centering
@@ -173,6 +172,26 @@ We then apply the inverse of the transformation matrices we used to convert to s
     \caption{Converting from screen space to OpenGL \cite{lwjglgamedev}.}
 	\label{fig:screen_coordinates}
 \end{figure}
+
+We then apply the inverse of the transformation matrices we used to convert to screen space to get the coordinates in world space.
+A marker is shown on the triangle to represent the current weighting, and the colour of the marker also reflects the current weighting.
+The weightings are calculated using a rearrangement of the following system of equations \cite{barycentric}:
+
+$$
+P_x = W_{p1}X_{p1} + W_{p2}X_{p2} + W_{p3}X_{p3} 
+$$
+$$
+P_y = W_{p1}Y_{p1} + W_{p2}Y_{p2} + W_{p3}Y_{p3}
+$$
+$$
+1 = W_{p1} + W_{p2} + W_{p3}
+$$
+
+If our user clicks outside the bounds of the selection triangle, a negative weighting would be produced, which we can check for before updating the output face.
+
+\subsection{Interpolated Face}
+
+For each vertex of the face, the coordinates can be calculated using the equations for Barycentric coordinates described above.
 
 \newpage
 \section{Summary of Implementation}

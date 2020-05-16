@@ -2,6 +2,8 @@ package stacs.graphics.logic;
 
 import org.joml.Vector3f;
 import stacs.graphics.data.Face;
+import stacs.graphics.render.Attribute;
+import stacs.graphics.render.MeshLoader;
 import stacs.graphics.render.Renderable;
 
 public class SelectionArea extends Renderable {
@@ -32,7 +34,8 @@ public class SelectionArea extends Renderable {
     };
 
     private final Marker marker = new Marker();
-    private final Vector3f weighting = new Vector3f();
+    private Vector3f weighting = new Vector3f();
+    private Face[] controlFaces;
 
     public SelectionArea() {
         super(POSITIONS, COLOURS, INDICES);
@@ -56,51 +59,75 @@ public class SelectionArea extends Renderable {
      *
      * @param controlFaces array of control faces
      */
-    public void addControlFaces(Face[] controlFaces) throws Exception {
+    public void setControlFaces(Face[] controlFaces) throws Exception {
         if (controlFaces.length < 3) {
             throw new Exception("Too few control faces");
         }
 
-        controlFaces[0].setPosition(POSITIONS[0], POSITIONS[1], POSITIONS[2]);
-        controlFaces[1].setPosition(POSITIONS[3], POSITIONS[4], POSITIONS[5]);
-        controlFaces[2].setPosition(POSITIONS[6], POSITIONS[7], POSITIONS[8]);
+        controlFaces[0].setPosition(POINT_A.x, POINT_A.y, POINT_A.z);
+        controlFaces[1].setPosition(POINT_B.x, POINT_B.y, POINT_B.z);
+        controlFaces[2].setPosition(POINT_C.x, POINT_C.y, POINT_C.z);
 
         for (Face controlFace : controlFaces) {
             controlFace.setScale(0.0000015f);
             addChild(controlFace);
         }
+
+        this.controlFaces = controlFaces;
     }
 
-    public void setCurrentWeighting(Vector3f triangleCoordinate) {
-        // utilise the fact that this is an isosceles triangle to calculate max distances
-        var AB = POINT_A.distance(POINT_B);
-        var BC = POINT_B.distance(POINT_C);
-        var AB2 = Math.pow(AB, 2);
-        var BC2 = Math.pow(BC, 2);
-        var aMax = (float) Math.sqrt(AB2 - (BC2 / 2));
-        var bcMax = (float) (AB * Math.sqrt(4 * AB2 - BC2) / (2 * AB2));
+    public void setCurrentWeighting(Vector3f point) {
+        var denominator = (POINT_B.y - POINT_C.y) * (POINT_A.x - POINT_C.x) + (POINT_C.x - POINT_B.x) * (POINT_A.y - POINT_C.y);
+        var xNumerator = (POINT_B.y - POINT_C.y) * (point.x - POINT_C.x) + (POINT_C.x - POINT_B.x) * (point.y - POINT_C.y);
+        var yNumerator = (POINT_C.y - POINT_A.y) * (point.x - POINT_C.x) + (POINT_A.x - POINT_C.x) * (point.y - POINT_C.y);
 
-        var aDistance = POINT_A.distance(triangleCoordinate);
-        var bDistance = POINT_B.distance(triangleCoordinate);
-        var cDistance = POINT_C.distance(triangleCoordinate);
+        var weighting = new Vector3f();
+        weighting.x = xNumerator / denominator;
+        weighting.y = yNumerator / denominator;
+        weighting.z = 1 - weighting.x - weighting.y;
 
-        // calculate weightings such that weighting is 1 when exactly at corner and 0 when exactly at opposite edge
-        weighting.x = (aMax - aDistance) / aMax;
-        weighting.y = (bcMax - bDistance) / bcMax;
-        weighting.z = (bcMax - cDistance) / bcMax;
-
-        updateMarker(triangleCoordinate);
+        // bounds check before updating
+        if (!((weighting.x > 1 || weighting.x < 0) ||
+                (weighting.y > 1 || weighting.y < 0) ||
+                (weighting.z > 1 || weighting.z < 0)
+        )) {
+            this.weighting = weighting;
+            updateMarker(point);
+        }
     }
 
     private void updateMarker(Vector3f markerCoordinate) {
         marker.setPosition(markerCoordinate.x, markerCoordinate.y, 0.1f);
-        System.out.println(weighting);
         marker.setColour(weighting);
     }
 
-    public void calculateOutputFace(OutputFace outputFace, Face[] controlFaces) {
-        // TODO
-//        MeshLoader.updateCoordinates();
-//        MeshLoader.updateColour();
+    public void updateOutputFace(OutputFace outputFace) {
+        final var outputVertices = outputFace.getVertices();
+        final var outputColours = outputFace.getColours();
+
+        final var aVertices = controlFaces[0].getVertices();
+        final var aColours = controlFaces[0].getColours();
+        final var bVertices = controlFaces[1].getVertices();
+        final var bColours = controlFaces[1].getColours();
+        final var cVertices = controlFaces[2].getVertices();
+        final var cColours = controlFaces[2].getColours();
+
+        // use barycentric coordinates to produce coordinate from weightings
+        for (int x = 0; x < outputVertices.length; x += 3) {
+            var y = x + 1;
+            var z = x + 2;
+            outputVertices[x] = (weighting.x * aVertices[x]) + (weighting.y * bVertices[x]) + (weighting.z * cVertices[x]);
+            outputVertices[y] = (weighting.x * aVertices[y]) + (weighting.y * bVertices[y]) + (weighting.z * cVertices[y]);
+            outputVertices[z] = (weighting.x * aVertices[z]) + (weighting.y * bVertices[z]) + (weighting.z * cVertices[z]);
+
+            outputColours[x] = (weighting.x * aColours[x]) + (weighting.y * bColours[x]) + (weighting.z * cColours[x]);
+            outputColours[y] = (weighting.x * aColours[y]) + (weighting.y * bColours[y]) + (weighting.z * cColours[y]);
+            outputColours[z] = (weighting.x * aColours[z]) + (weighting.y * bColours[z]) + (weighting.z * cColours[z]);
+        }
+
+        outputFace.getMesh().ifPresent(m -> {
+            MeshLoader.updateAttribute(m, outputVertices, Attribute.COORDINATES);
+            MeshLoader.updateAttribute(m, outputColours, Attribute.COLOUR);
+        });
     }
 }

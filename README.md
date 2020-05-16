@@ -1,7 +1,7 @@
 # TODO 
 * [X] Render face
 * [X] Render control faces
-* [ ] Click triangle for weighting
+* [X] Click triangle for weighting
 * [ ] Create interpolated face
 * [ ] Flat shading
 * [ ] Gouraud shading

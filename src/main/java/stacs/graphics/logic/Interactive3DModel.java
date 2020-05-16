@@ -58,10 +58,13 @@ public class Interactive3DModel implements IApplicationLogic {
         var firstFace = controlFaces[0];
         var indices = firstFace.getIndices();
         outputFace = new OutputFace(firstFace.getVertices().length, Arrays.copyOf(indices, indices.length));
+        outputFace.setPosition(0f, 0f, 1f);
+        outputFace.setScale(1f);
 
         // prepare interpolation triangle
         selectionArea = new SelectionArea();
-        selectionArea.addControlFaces(controlFaces);
+        selectionArea.setControlFaces(controlFaces);
+        selectionArea.updateOutputFace(outputFace);
 
         // add renderables to scene
         sceneRoot.addChild(selectionArea);
@@ -109,7 +112,7 @@ public class Interactive3DModel implements IApplicationLogic {
             var position = mouseInput.getCurrentPos();
             var triangleCoordinate = renderer.invertScreenCoordinates(window, camera, position);
             selectionArea.setCurrentWeighting(new Vector3f(triangleCoordinate.x, triangleCoordinate.y, 0.0f));
-            selectionArea.calculateOutputFace(outputFace, controlFaces);
+            selectionArea.updateOutputFace(outputFace);
         }
     }
 
