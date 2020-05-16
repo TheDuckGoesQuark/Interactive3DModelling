@@ -11,6 +11,9 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * INCREASE THE STACK SIEZ
+ */
 public class PainterRenderer extends Renderer {
 
     private final ExecutorService threadPoolExecutor = Executors.newFixedThreadPool(MAX_THREADS);
@@ -79,6 +82,7 @@ public class PainterRenderer extends Renderer {
     }
 
     private void renderWithPainter(Renderable m, Matrix4f transformMatrix) {
+        System.out.println(m.toString());
         float[] output = transformVertices(m, transformMatrix);
         int[] indices = m.getIndices();
         sortIndicesByPainter(indices, output);

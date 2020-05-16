@@ -58,8 +58,9 @@ public class Interactive3DModel implements IApplicationLogic {
         var firstFace = controlFaces[0];
         var indices = firstFace.getIndices();
         outputFace = new OutputFace(firstFace.getVertices().length, Arrays.copyOf(indices, indices.length));
-        outputFace.setPosition(0f, 0f, 1f);
-        outputFace.setScale(1f);
+        outputFace.setPosition(1.8f, 0f, -0.5f);
+        outputFace.setRotation(0f, 45, 0f);
+        outputFace.setScale(0.00001f);
 
         // prepare interpolation triangle
         selectionArea = new SelectionArea();
