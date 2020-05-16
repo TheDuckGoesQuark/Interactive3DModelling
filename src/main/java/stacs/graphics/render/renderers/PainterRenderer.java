@@ -1,9 +1,6 @@
 package stacs.graphics.render.renderers;
 
-import org.joml.Matrix4f;
-import org.joml.Vector2d;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import org.joml.*;
 import stacs.graphics.data.ResourceLoader;
 import stacs.graphics.render.Camera;
 import stacs.graphics.render.Renderable;
@@ -55,20 +52,15 @@ public class PainterRenderer extends Renderer {
         shaderProgram.unbind();
     }
 
-    @Override
-    public Vector2f invertScreenCoordinates(Window window, Camera camera, Vector2d position) {
-        return null;
-    }
-
     private void render(Renderable renderable, Matrix4f parentWorldMatrix, Matrix4f projectionMatrix, Matrix4f viewMatrix) {
         final Matrix4f worldMatrix;
         if (parentWorldMatrix == null) {
             // this node is root
-            worldMatrix = transformation.getWorldMatrix(renderable);
+            worldMatrix = new Matrix4f(transformation.getWorldMatrix(renderable));
         } else {
             // translate child relative to parent
-            worldMatrix = new Matrix4f(parentWorldMatrix)
-                    .mul(transformation.getWorldMatrix(renderable));
+            worldMatrix = new Matrix4f();
+            parentWorldMatrix.mul(transformation.getWorldMatrix(renderable), worldMatrix);
         }
 
         // build matrix

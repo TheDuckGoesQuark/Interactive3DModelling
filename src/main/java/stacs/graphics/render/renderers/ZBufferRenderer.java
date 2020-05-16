@@ -56,39 +56,15 @@ public class ZBufferRenderer extends Renderer {
         shaderProgram.unbind();
     }
 
-    @Override
-    public Vector2f invertScreenCoordinates(Window window, Camera camera, Vector2d position) {
-        // get normalised device coordinates
-        var normalisedX = (2 * ((float) position.x) / ((float) window.getWidth())) - 1;
-        var normalisedY = 1 - (2 * ((float) position.y) / ((float) window.getHeight()));
-        var deviceCoordinates = new Vector3f(normalisedX, normalisedY, 1.0f);
-
-        // clip coordinates
-        var homogenousClipCoordinates = new Vector4f(deviceCoordinates.x, deviceCoordinates.y, -1.0f, 1.0f);
-
-        // camera coordinates
-        var rayEye = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR)
-                .invert().transform(homogenousClipCoordinates);
-
-        // only need x,y, so specify z as 'forwards' (i.e. the ray going into the screen)
-        rayEye.z = -1.0f;
-        rayEye.w = 0.0f;
-
-        // world coordinates
-        var rayWorld = transformation.getViewMatrix(camera).invert().transform(rayEye);
-
-        return new Vector2f(rayWorld.x, rayWorld.y);
-    }
-
     private void render(Renderable renderable, Matrix4f parentWorldMatrix) {
         final Matrix4f worldMatrix;
         if (parentWorldMatrix == null) {
             // this node is root
-            worldMatrix = transformation.getWorldMatrix(renderable);
+            worldMatrix = new Matrix4f(transformation.getWorldMatrix(renderable));
         } else {
             // translate child relative to parent
-            worldMatrix = new Matrix4f(parentWorldMatrix)
-                    .mul(transformation.getWorldMatrix(renderable));
+            worldMatrix = new Matrix4f();
+            parentWorldMatrix.mul(transformation.getWorldMatrix(renderable), worldMatrix);
         }
 
         shaderProgram.setUniform(ZBufferRenderer.WORLD_MATRIX_NAME, worldMatrix);

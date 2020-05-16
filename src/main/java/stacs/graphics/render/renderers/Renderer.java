@@ -3,6 +3,7 @@ package stacs.graphics.render.renderers;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -49,5 +50,27 @@ public abstract class Renderer {
         GL30.glBindVertexArray(0);
     }
 
-    public abstract Vector2f invertScreenCoordinates(Window window, Camera camera, Vector2d position);
+    public Vector2f invertScreenCoordinates(Window window, Camera camera, Vector2d position) {
+        // get normalised device coordinates
+        var normalisedX = (2 * ((float) position.x) / ((float) window.getWidth())) - 1;
+        var normalisedY = 1 - (2 * ((float) position.y) / ((float) window.getHeight()));
+        var deviceCoordinates = new Vector3f(normalisedX, normalisedY, 1.0f);
+
+        // clip coordinates
+        var homogenousClipCoordinates = new Vector4f(deviceCoordinates.x, deviceCoordinates.y, -1.0f, 1.0f);
+
+        // camera coordinates
+        var rayEye = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR)
+                .invert().transform(homogenousClipCoordinates);
+
+        // only need x,y, so specify z as 'forwards' (i.e. the ray going into the screen)
+        rayEye.z = -1.0f;
+        rayEye.w = 0.0f;
+
+        // world coordinates
+        var rayWorld = transformation.getViewMatrix(camera).invert().transform(rayEye);
+
+        return new Vector2f(rayWorld.x, rayWorld.y);
+    }
+
 }

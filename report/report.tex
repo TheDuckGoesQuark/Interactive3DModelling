@@ -153,7 +153,7 @@ This renderer was significantly slower both due to the added computation necessa
 The first step involved applying each transformation to the set of coordinates. 
 To try improve performance, this task was parallelised using a thread pool.
 Then, for each triplet of indices (i.e. each triangle), the maximum Z value was recorded.
-Next, maximum z values for each triangle were sorted lowest to highest using a custom \texttt{quicksort} implementation.
+Next, maximum z values for each triangle were sorted lowest to highest using a custom \texttt{quicksort} implementation based on \cite{baeldung}.
 The custom implementation was necessary so that every swap performed on the array of maximum z values would also be performed on the indices array, effectively sorting each triangle by maximum z value.
 The new indices would then be passed as a VBO for OpenGL, which renders triangles in order of appearance in the indices VBO.
 
