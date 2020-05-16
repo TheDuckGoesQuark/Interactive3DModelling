@@ -53,7 +53,7 @@ public class ZBufferRenderer extends Renderer {
         shaderProgram.bind();
 
         // update matrices
-        var projectionMatrix = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        var projectionMatrix = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, zFar);
         shaderProgram.setUniform(PROJECTION_MATRIX_UNIFORM_NAME, projectionMatrix);
 
         var viewMatrix = transformation.getViewMatrix(camera);

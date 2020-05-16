@@ -53,7 +53,7 @@ public class PainterRenderer extends Renderer {
         clear();
 
         // transform values
-        var projectionMatrix = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        var projectionMatrix = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, zFar);
         var viewMatrix = transformation.getViewMatrix(camera);
 
         shaderProgram.bind();

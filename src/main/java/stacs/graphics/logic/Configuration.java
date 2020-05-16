@@ -16,10 +16,13 @@ public class Configuration {
     private static final String SHADING_OPTION = "shading";
     private static final String[] SHADING_OPTIONS = new String[]{SHADING_FLAT, SHADING_GOURAUD};
 
+    private static final String FOCAL_LENGTH_OPTION = "focal-length";
+
     private static final String HELP_OPTION = "help";
 
     private String depthTestMethod = DEPTH_TEST_ZBUFFER;
     private String shadingMethod = SHADING_FLAT;
+    private float focalLength = 5f;
 
     public Configuration(String[] args) {
         var options = new Options();
@@ -38,6 +41,11 @@ public class Configuration {
                         "\nChoose from: " + Arrays.toString(SHADING_OPTIONS));
         options.addOption(shadingMethodOption);
 
+        var focalLengthOption = new Option("f", FOCAL_LENGTH_OPTION, true,
+                "Focal Length. " +
+                        "\nDefault: " + focalLength);
+        options.addOption(focalLengthOption);
+
         var cliParser = new DefaultParser();
         CommandLine cmd;
 
@@ -48,6 +56,7 @@ public class Configuration {
             }
             depthTestMethod = cmd.getOptionValue(DEPTH_TEST_OPTION, depthTestMethod);
             shadingMethod = cmd.getOptionValue(SHADING_OPTION, shadingMethod);
+            focalLength = Float.parseFloat(cmd.getOptionValue(FOCAL_LENGTH_OPTION, Float.toString(focalLength)));
         } catch (ParseException e) {
             handleParseException(args[0], e, options);
         }
@@ -65,5 +74,9 @@ public class Configuration {
 
     public String getDepthTestMethod() {
         return depthTestMethod;
+    }
+
+    public float getFocalLength() {
+        return focalLength;
     }
 }

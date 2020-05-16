@@ -12,13 +12,14 @@ import stacs.graphics.logic.Configuration;
 import stacs.graphics.render.*;
 
 public abstract class Renderer {
-    protected final Transformation transformation;
     protected static final float FOV = (float) Math.toRadians(60.0f);
     protected static final float Z_NEAR = 0.01f;
-    protected static final float Z_FAR = 100.f;
+    protected final Transformation transformation;
+    protected final float zFar;
     protected ShaderProgram shaderProgram;
 
     public Renderer(Configuration configuration) {
+        this.zFar = Z_NEAR + configuration.getFocalLength();
         this.transformation = new Transformation();
     }
 
@@ -64,7 +65,7 @@ public abstract class Renderer {
         var homogenousClipCoordinates = new Vector4f(deviceCoordinates.x, deviceCoordinates.y, -1.0f, 1.0f);
 
         // camera coordinates
-        var rayEye = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR)
+        var rayEye = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, zFar)
                 .invert().transform(homogenousClipCoordinates);
 
         // only need x,y, so specify z as 'forwards' (i.e. the ray going into the screen)
