@@ -31,8 +31,10 @@ public class Configuration {
 
     public Configuration(String[] args) {
         var options = new Options();
+
         var help = new Option("h", HELP_OPTION, false, "See usage");
         options.addOption(help);
+
         var depthTestMethodOption = new Option("d", DEPTH_TEST_OPTION, true,
                 "Depth test method. " +
                         "\nDefault: " + depthTestMethod +
@@ -63,7 +65,7 @@ public class Configuration {
 
         try {
             cmd = cliParser.parse(options, args);
-            if (cmd.getOptionValue(HELP_OPTION, null) != null) {
+            if (cmd.hasOption(HELP_OPTION)) {
                 handleParseException(args[0], null, options);
             }
             depthTestMethod = cmd.getOptionValue(DEPTH_TEST_OPTION, depthTestMethod);
