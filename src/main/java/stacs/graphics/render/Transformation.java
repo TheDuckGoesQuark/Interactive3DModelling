@@ -4,27 +4,41 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Transformation {
+    public enum ProjectionMethod {
+        PERSPECTIVE,
+        ORTHOGRAPHIC,
+    }
 
+    private final ProjectionMethod projectionMethod;
     private final Matrix4f projectionMatrix;
     private final Matrix4f worldMatrix;
     private final Matrix4f viewMatrix;
 
-    public Transformation() {
+    public Transformation(ProjectionMethod projectionMethod) {
+        this.projectionMethod = projectionMethod;
         this.projectionMatrix = new Matrix4f();
         this.worldMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
     }
 
-    public final Matrix4f getPerspectiveProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
+    public Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
+        if (projectionMethod == ProjectionMethod.PERSPECTIVE)
+            return getPerspectiveProjectionMatrix(fov, width, height, zNear, zFar);
+        else
+            return getOrthographicProjectionMatrix(fov, width, height, zNear, zFar);
+    }
+
+    private Matrix4f getPerspectiveProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
         return projectionMatrix
+                .identity()
                 .setPerspective(fov, width / height, zNear, zFar);
     }
 
-//    public final Matrix4f getOrthographicProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
-//        return projectionMatrix
-//                .identity()
-//                .setOrtho(0.0f, width, height, 5.0f, zNear, zFar);
-//    }
+    private Matrix4f getOrthographicProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
+        return projectionMatrix
+                .identity()
+                .setOrtho(-1, width / height, -1, 1, zNear, zFar);
+    }
 
     public Matrix4f getViewMatrix(Camera camera) {
         var cameraPos = camera.getPosition();

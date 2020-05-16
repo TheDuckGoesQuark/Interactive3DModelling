@@ -7,7 +7,7 @@
 * [ ] Gouraud shading
 * [ ] Orthographic projection
 * [X] Perspective projection
-* [ ] Adjustible focal length
+* [X] Adjustible focal length
 * [ ] Comparison of shading and projection
 * [ ] light attention model in lectures
 * [ ] adjustable free parameters

@@ -20,7 +20,7 @@ public abstract class Renderer {
 
     public Renderer(Configuration configuration) {
         this.zFar = Z_NEAR + configuration.getFocalLength();
-        this.transformation = new Transformation();
+        this.transformation = new Transformation(configuration.getProjectionMethod());
     }
 
     public void cleanup() {
@@ -65,7 +65,7 @@ public abstract class Renderer {
         var homogenousClipCoordinates = new Vector4f(deviceCoordinates.x, deviceCoordinates.y, -1.0f, 1.0f);
 
         // camera coordinates
-        var rayEye = transformation.getPerspectiveProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, zFar)
+        var rayEye = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, zFar)
                 .invert().transform(homogenousClipCoordinates);
 
         // only need x,y, so specify z as 'forwards' (i.e. the ray going into the screen)
