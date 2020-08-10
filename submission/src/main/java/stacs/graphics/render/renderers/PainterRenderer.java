@@ -13,6 +13,9 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * INCREASE THE STACK SIEZ
+ */
 public class PainterRenderer extends Renderer {
 
     private final ExecutorService threadPoolExecutor = Executors.newFixedThreadPool(MAX_THREADS);

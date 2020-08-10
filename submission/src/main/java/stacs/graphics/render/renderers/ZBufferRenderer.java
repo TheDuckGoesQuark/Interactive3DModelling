@@ -12,6 +12,7 @@ public class ZBufferRenderer extends Renderer {
     private static final String WORLD_MATRIX_NAME = "worldMatrix";
     private static final String PROJECTION_MATRIX_UNIFORM_NAME = "projectionMatrix";
     private static final String VIEW_MATRIX_NAME = "viewMatrix";
+    private static final String DIRECTIONAL_LIGHT_NAME = "directionalLight";
     private final String fragmentShaderResourceName = "shaders/fragment.shader";
     private final String vertexShaderResourceName = "shaders/vertex.shader";
 
@@ -33,6 +34,7 @@ public class ZBufferRenderer extends Renderer {
         shaderProgram.createUniform(PROJECTION_MATRIX_UNIFORM_NAME);
         shaderProgram.createUniform(VIEW_MATRIX_NAME);
         shaderProgram.createUniform(WORLD_MATRIX_NAME);
+//        shaderProgram.createDirectionalLightUniform(DIRECTIONAL_LIGHT_NAME);
 
         // enable use of z-buffer for rendering triangles in correct order
         // opengl implements this for us and is performed on the GPU
@@ -56,6 +58,13 @@ public class ZBufferRenderer extends Renderer {
 
         var viewMatrix = transformation.getViewMatrix(camera);
         shaderProgram.setUniform(VIEW_MATRIX_NAME, viewMatrix);
+
+        // update lighting
+        var currDirLight = new DirectionalLight(directionalLight);
+        var dir = new Vector4f(currDirLight.getDirection(), 0);
+        dir.mul(viewMatrix);
+        currDirLight.setDirection(new Vector3f(dir.x, dir.y, dir.z));
+//        shaderProgram.setUniform(DIRECTIONAL_LIGHT_NAME, currDirLight);
 
         render(sceneRoot, null);
 
